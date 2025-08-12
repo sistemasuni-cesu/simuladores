@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('successMessage');
     
     // Substitua esta URL pela URL do seu Google Apps Script
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbz1m6UOUsA40Nr2W2HWjN9Bc1fZiOe5ma8JIJ1YuNlMOr658O48SU2QkVurQ7SZnjxChg/exec';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbyWoTUyr8M0JZZZkmeOU_7k0B5hE00cjzM9EzoY6mIGXW-sK0IOXPqNeuMIy8seq2x9eg/exec';
     
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
             anoConclusao: document.getElementById('anoConclusao').value,
             tipoInscricao: document.getElementById('tipoInscricao').value,
             cursoOpcao1: document.getElementById('cursoOpcao1').value,
-            cupomPromocional: document.getElementById('cupomPromocional').value
+            cupomPromocional: document.getElementById('cupomPromocional').value,
+            analista: document.getElementById('analista').value 
         };
         
         // Enviar dados para o Google Sheets
