@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Vestibular - UNICESUMAR</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="home-icon">
+            <i class="fas fa-home"></i>
+        </a>
+        <div class="logo-container">
+            <img src="https://venhaparaunicesumar.com.br/wp-content/themes/unicesumar/images/logo-unicesumar.png" alt="UNICESUMAR Logo">
+        </div>
+        <h1>Simulador Vestibular - UNICESUMAR</h1>
+    </header>
+
+    <main class="container">
+        <form id="vestibularSimulatorForm">
+            <div class="form-group">
+                <label for="course">Curso:</label>
+                <select id="course" name="course" required>
+                    <option value="">Selecione um curso</option>
+                    <option value="">Selecione um curso</option>
+                    <option value="0">GRADUAÇÃO EM ADMINISTRAÇÃO</option>
+                    <option value="1">GRADUAÇÃO EM AGRONOMIA</option>
+                    <option value="2">GRADUAÇÃO EM ARQUITETURA E URBANISMO</option>
+                    <option value="3">GRADUAÇÃO EM BIOMEDICINA</option>
+                    <option value="4">GRADUAÇÃO EM CIÊNCIAS CONTÁBEIS</option>
+                    <option value="5">GRADUAÇÃO EM COMUNICAÇÃO SOCIAL</option>
+                    <option value="6">GRADUAÇÃO EM DIREITO</option>
+                    <option value="7">GRADUAÇÃO EM ENFERMAGEM</option>
+                    <option value="8">GRADUAÇÃO EM ENGENHARIA CIVIL</option>
+                    <option value="9">GRADUAÇÃO EM ENGENHARIA DE SOFTWARE</option>
+                    <option value="10">GRADUAÇÃO EM ENGENHARIA MECÂNICA</option>
+                    <option value="11">GRADUAÇÃO EM FARMÁCIA</option>
+                    <option value="12">GRADUAÇÃO EM FISIOTERAPIA</option>
+                    <option value="13">GRADUAÇÃO EM MEDICINA VETERINÁRIA</option>
+                    <option value="14">GRADUAÇÃO EM NUTRIÇÃO</option>
+                    <option value="15">GRADUAÇÃO EM ODONTOLOGIA</option>
+                    <option value="16">GRADUAÇÃO EM PEDAGOGIA</option>
+                    <option value="17">GRADUAÇÃO EM PSICOLOGIA</option>
+                    <option value="18">SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS</option>
+                    <option value="19">SUPERIOR DE TECNOLOGIA EM ESTÉTICA E COSMÉTICA</option>
+                    <option value="20">SUPERIOR DE TECNOLOGIA EM PROCESSOS GERENCIAIS</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Turno:</label>
+                <div class="radio-group">
+                    <input type="radio" id="matutino" name="shift" value="matutino" checked>
+                    <label for="matutino">Matutino</label>
+                    <input type="radio" id="noturno" name="shift" value="noturno">
+                    <label for="noturno">Noturno</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Editor de Mensagem:</label>
+                <div class="variable-buttons">
+                    <button type="button" class="variable-btn" data-var="{course}">Curso</button>
+                    <button type="button" class="variable-btn" data-var="{shift}">Turno</button>
+                    <button type="button" class="variable-btn" data-var="{fullPrice}">Valor Integral</button>
+                    <button type="button" class="variable-btn" data-var="{discount}">Desconto (%)</button>
+                    <button type="button" class="variable-btn" data-var="{finalPrice}">Valor Final</button>
+                </div>
+                <textarea id="messageTemplate" rows="8" class="message-template">
+{course} - {shift}
+
+De: {fullPrice}
+
+Com desconto de {discount}% + 10% de pontualidade
+
+Por: {finalPrice}</textarea>
+                <small>Clique nos botões acima para inserir as variáveis no texto</small>
+            </div>
+
+            <button type="submit" class="btn-calculate">Gerar Simulação</button>
+        </form>
+
+        <div id="results" class="results-container" style="display: none;">
+            <h2>Resultado da Simulação</h2>
+            <div id="resultContent" class="result-message"></div>
+            <button id="copyButton" class="btn-copy">Copiar Mensagem</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2023 UNICESUMAR - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="simulador-vestibular.js"></script>
+</body>
+</html>
