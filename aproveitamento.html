@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- Adicione isso no <head> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador ENEM - UNICESUMAR</title>
+    <title>Aproveitamento de Estudos - UNICESUMAR</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Adicionando as bibliotecas para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <header>
@@ -16,11 +22,11 @@
         <div class="logo-container">
             <img src="https://venhaparaunicesumar.com.br/wp-content/themes/unicesumar/images/logo-unicesumar.png" alt="UNICESUMAR Logo">
         </div>
-        <h1>Simulador ENEM - UNICESUMAR</h1>
+        <h1>Aproveitamento de Estudos - UNICESUMAR</h1>
     </header>
 
     <main class="container">
-        <form id="enemSimulatorForm">
+        <div class="input-section">
             <div class="form-group">
                 <label for="course">Curso:</label>
                 <select id="course" name="course" required>
@@ -54,43 +60,69 @@
                 <div class="radio-group">
                     <input type="radio" id="matutino" name="shift" value="matutino" checked>
                     <label for="matutino">Matutino</label>
-                    
                     <input type="radio" id="noturno" name="shift" value="noturno">
                     <label for="noturno">Noturno</label>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="humanas">Ciências Humanas e Suas Tecnologias:</label>
-                <input type="number" id="humanas" name="humanas" min="0" max="1000" required>
+                <label for="initialSeries">Série Inicial:</label>
+                <select id="initialSeries" name="initialSeries" required>
+                    <option value="1">1ª Série</option>
+                    <option value="2">2ª Série</option>
+                    <option value="3">3ª Série</option>
+                    <option value="4">4ª Série</option>
+                    <option value="5">5ª Série</option>
+                    <option value="6">6ª Série</option>
+                    <option value="7">7ª Série</option>
+                    <option value="8">8ª Série</option>
+                    <option value="9">9ª Série</option>
+                    <option value="10">10ª Série</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label for="natureza">Ciências da Natureza e Suas Tecnologias:</label>
-                <input type="number" id="natureza" name="natureza" min="0" max="1000" required>
+                <label>Grade Invertida:</label>
+                <div class="radio-group">
+                    <input type="radio" id="invertedNo" name="inverted" value="false" checked>
+                    <label for="invertedNo">Não</label>
+                    <input type="radio" id="invertedYes" name="inverted" value="true">
+                    <label for="invertedYes">Sim</label>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="linguagens">Linguagens, Códigos e Suas Tecnologias:</label>
-                <input type="number" id="linguagens" name="linguagens" min="0" max="1000" required>
+            <div class="form-group full-width">
+                <label for="dataInput">Cole os dados da planilha de aproveitamento:</label>
+                <textarea id="dataInput" rows="10" class="data-input"></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="matematica">Matemática e Suas Tecnologias:</label>
-                <input type="number" id="matematica" name="matematica" min="0" max="1000" required>
+            <button id="processButton" class="btn-calculate">Processar Dados</button>
+        </div>
+
+        <div id="resultsSection" class="results-container" style="display: none;">
+            <h2>Resultado do Aproveitamento</h2>
+            
+            <div class="tabs">
+                <button class="tab-button active" data-tab="organized">Grade Organizada</button>
+                <button class="tab-button" data-tab="pending">Disciplinas Pendentes</button>
             </div>
-
-            <div class="form-group">
-                <label for="redacao">Redação:</label>
-                <input type="number" id="redacao" name="redacao" min="0" max="1000" required>
+            
+            <div id="organizedTab" class="tab-content active">
+                <div id="organizedResults"></div>
             </div>
+            
+            <div id="pendingTab" class="tab-content">
+                <div id="pendingResults"></div>
+                <button id="finalizeButton" class="btn-calculate">Finalizar Ajustes</button>
+            </div>
+            
+            <button id="downloadButton" class="btn-copy">Baixar PDF</button>
+        </div>
 
-            <button type="submit" class="btn-calculate">Calcular Desconto</button>
-        </form>
-
-        <div id="results" class="results-container" style="display: none;">
-            <h2>Resultado da Simulação</h2>
-            <div id="resultContent"></div>
+        <div id="finalResults" class="results-container" style="display: none;">
+            <h2>Resultado Final</h2>
+            <div id="finalResultsContent"></div>
+            <button id="finalDownloadButton" class="btn-copy">Baixar PDF Final</button>
         </div>
     </main>
 
@@ -98,6 +130,6 @@
         <p>© 2023 UNICESUMAR - Todos os direitos reservados</p>
     </footer>
 
-    <script src="simulador-enem.js"></script>
+    <script src="aproveitamento.js"></script>
 </body>
 </html>
