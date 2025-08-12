@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Inscrição - UNICESUMAR</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="home-icon">
+            <i class="fas fa-home"></i>
+        </a>
+        <div class="logo-container">
+            <img src="https://venhaparaunicesumar.com.br/wp-content/themes/unicesumar/images/logo-unicesumar.png" alt="UNICESUMAR Logo">
+        </div>
+        <h1>Formulário de Inscrição - UNICESUMAR</h1>
+    </header>
+
+    <main class="container">
+        <form id="inscricaoForm" class="form-container">
+            <div class="form-group">
+                <label for="nome">Nome Completo:</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" name="cpf" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">Telefone:</label>
+                <input type="tel" id="telefone" name="telefone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dataNascimento">Data de Nascimento:</label>
+                <input type="date" id="dataNascimento" name="dataNascimento" required>
+            </div>
+
+            <div class="form-group">
+                <label>Sexo:</label>
+                <div class="radio-group">
+                    <input type="radio" id="masculino" name="sexo" value="Masculino" required>
+                    <label for="masculino">Masculino</label>
+                    <input type="radio" id="feminino" name="sexo" value="Feminino">
+                    <label for="feminino">Feminino</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="rg">RG:</label>
+                <input type="text" id="rg" name="rg" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ufRg">UF do RG:</label>
+                <input type="text" id="ufRg" name="ufRg" maxlength="2" required>
+            </div>
+
+            <div class="form-group">
+                <label for="deficiencia">Deficiência (se aplicável):</label>
+                <input type="text" id="deficiencia" name="deficiencia">
+            </div>
+
+            <div class="form-group">
+                <label for="nacionalidade">Nacionalidade:</label>
+                <input type="text" id="nacionalidade" name="nacionalidade" required>
+            </div>
+
+            <div class="form-group">
+                <label for="paisNascimento">País onde nasceu:</label>
+                <input type="text" id="paisNascimento" name="paisNascimento" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cep">CEP:</label>
+                <input type="text" id="cep" name="cep" required>
+            </div>
+
+            <div class="form-group">
+                <label for="endereco">Endereço:</label>
+                <input type="text" id="endereco" name="endereco" required>
+            </div>
+
+            <div class="form-group">
+                <label for="numero">Número:</label>
+                <input type="text" id="numero" name="numero" required>
+            </div>
+
+            <div class="form-group">
+                <label for="complemento">Complemento:</label>
+                <input type="text" id="complemento" name="complemento">
+            </div>
+
+            <div class="form-group">
+                <label for="bairro">Bairro:</label>
+                <input type="text" id="bairro" name="bairro" required>
+            </div>
+
+            <div class="form-group">
+                <label for="uf">UF:</label>
+                <input type="text" id="uf" name="uf" maxlength="2" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cidade">Cidade:</label>
+                <input type="text" id="cidade" name="cidade" required>
+            </div>
+
+            <div class="form-group">
+                <label for="treineiro">Treineiro:</label>
+                <select id="treineiro" name="treineiro" required>
+                    <option value="Não">Não</option>
+                    <option value="Sim">Sim</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Ensino Médio:</label>
+                <div class="radio-group">
+                    <input type="radio" id="publica" name="ensinoMedio" value="Pública" required>
+                    <label for="publica">Pública</label>
+                    <input type="radio" id="privada" name="ensinoMedio" value="Privada">
+                    <label for="privada">Privada</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="anoConclusao">Ano de conclusão da última formação:</label>
+                <input type="number" id="anoConclusao" name="anoConclusao" min="1900" max="2099" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipoInscricao">Tipo de inscrição:</label>
+                <select id="tipoInscricao" name="tipoInscricao" required>
+                    <option value="Vestibular">Vestibular</option>
+                    <option value="Portador de Diploma">Portador de Diploma</option>
+                    <option value="Transferência">Transferência</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cursoOpcao1">1ª Opção de Curso:</label>
+                <select id="cursoOpcao1" name="cursoOpcao1" required>
+                    <option value="">Selecione um curso</option>
+                    <option value="GRADUAÇÃO EM ADMINISTRAÇÃO">GRADUAÇÃO EM ADMINISTRAÇÃO</option>
+                    <option value="GRADUAÇÃO EM AGRONOMIA">GRADUAÇÃO EM AGRONOMIA</option>
+                    <option value="GRADUAÇÃO EM ARQUITETURA E URBANISMO">GRADUAÇÃO EM ARQUITETURA E URBANISMO</option>
+                    <option value="GRADUAÇÃO EM BIOMEDICINA">GRADUAÇÃO EM BIOMEDICINA</option>
+                    <option value="GRADUAÇÃO EM CIÊNCIAS CONTÁBEIS">GRADUAÇÃO EM CIÊNCIAS CONTÁBEIS</option>
+                    <option value="GRADUAÇÃO EM COMUNICAÇÃO SOCIAL">GRADUAÇÃO EM COMUNICAÇÃO SOCIAL</option>
+                    <option value="GRADUAÇÃO EM DIREITO">GRADUAÇÃO EM DIREITO</option>
+                    <option value="GRADUAÇÃO EM ENFERMAGEM">GRADUAÇÃO EM ENFERMAGEM</option>
+                    <option value="GRADUAÇÃO EM ENGENHARIA CIVIL">GRADUAÇÃO EM ENGENHARIA CIVIL</option>
+                    <option value="GRADUAÇÃO EM ENGENHARIA DE SOFTWARE">GRADUAÇÃO EM ENGENHARIA DE SOFTWARE</option>
+                    <option value="GRADUAÇÃO EM ENGENHARIA MECÂNICA">GRADUAÇÃO EM ENGENHARIA MECÂNICA</option>
+                    <option value="GRADUAÇÃO EM FARMÁCIA">GRADUAÇÃO EM FARMÁCIA</option>
+                    <option value="GRADUAÇÃO EM FISIOTERAPIA">GRADUAÇÃO EM FISIOTERAPIA</option>
+                    <option value="GRADUAÇÃO EM MEDICINA VETERINÁRIA">GRADUAÇÃO EM MEDICINA VETERINÁRIA</option>
+                    <option value="GRADUAÇÃO EM NUTRIÇÃO">GRADUAÇÃO EM NUTRIÇÃO</option>
+                    <option value="GRADUAÇÃO EM ODONTOLOGIA">GRADUAÇÃO EM ODONTOLOGIA</option>
+                    <option value="GRADUAÇÃO EM PEDAGOGIA">GRADUAÇÃO EM PEDAGOGIA</option>
+                    <option value="GRADUAÇÃO EM PSICOLOGIA">GRADUAÇÃO EM PSICOLOGIA</option>
+                    <option value="SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS">SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS</option>
+                    <option value="SUPERIOR DE TECNOLOGIA EM ESTÉTICA E COSMÉTICA">SUPERIOR DE TECNOLOGIA EM ESTÉTICA E COSMÉTICA</option>
+                    <option value="SUPERIOR DE TECNOLOGIA EM PROCESSOS GERENCIAIS">SUPERIOR DE TECNOLOGIA EM PROCESSOS GERENCIAIS</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cupomPromocional">Cupom Promocional (se houver):</label>
+                <input type="text" id="cupomPromocional" name="cupomPromocional">
+            </div>
+
+            <button type="submit" class="btn-calculate">Enviar Inscrição</button>
+        </form>
+
+        <div id="successMessage" class="success-message" style="display: none;">
+            <h2>Inscrição realizada com sucesso!</h2>
+            <p>Obrigado por se inscrever. Em breve entraremos em contato.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2023 UNICESUMAR - Todos os direitos reservados</p>
+    </footer>
+
+    <script src="formulario.js"></script>
+</body>
+</html>
