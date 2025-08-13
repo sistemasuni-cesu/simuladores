@@ -41,6 +41,21 @@ const coursesData = {
     }
 };
 
+// Função para carregar mensagem salva
+function loadSavedMessage() {
+    const savedMessage = localStorage.getItem('customMessage');
+    if (savedMessage) {
+        document.getElementById('messageTemplate').value = savedMessage;
+    }
+}
+
+// Função para configurar auto-salvamento da mensagem
+function setupMessageAutoSave() {
+    const messageTextarea = document.getElementById('messageTemplate');
+    messageTextarea.addEventListener('input', function() {
+        localStorage.setItem('customMessage', this.value);
+    });
+}
 // Adiciona eventos aos botões de variáveis
 document.querySelectorAll('.variable-btn').forEach(button => {
     button.addEventListener('click', function() {
@@ -137,4 +152,5 @@ function showError(message) {
     `;
     
     resultsDiv.style.display = 'block';
+
 }
