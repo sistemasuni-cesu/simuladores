@@ -56,6 +56,18 @@ function setupMessageAutoSave() {
         localStorage.setItem('customMessage', this.value);
     });
 }
+// Função para exibir mensagens de erro
+function showError(message) {
+    const resultsDiv = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
+    
+    resultContent.innerHTML = `
+        <div class="error-message">${message}</div>
+    `;
+    
+    resultsDiv.style.display = 'block';
+}
+
 // Adiciona eventos aos botões de variáveis
 document.querySelectorAll('.variable-btn').forEach(button => {
     button.addEventListener('click', function() {
@@ -154,3 +166,4 @@ function showError(message) {
     resultsDiv.style.display = 'block';
 
 }
+
