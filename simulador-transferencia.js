@@ -56,6 +56,7 @@ function setupMessageAutoSave() {
         localStorage.setItem('customMessage', this.value);
     });
 }
+
 // Função para exibir mensagens de erro
 function showError(message) {
     const resultsDiv = document.getElementById('results');
@@ -68,67 +69,83 @@ function showError(message) {
     resultsDiv.style.display = 'block';
 }
 
-// Adiciona eventos aos botões de variáveis
-document.querySelectorAll('.variable-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const textarea = document.getElementById('messageTemplate');
-        const variable = this.getAttribute('data-var');
-        const startPos = textarea.selectionStart;
-        const endPos = textarea.selectionEnd;
-        
-        // Insere a variável na posição do cursor
-        textarea.value = textarea.value.substring(0, startPos) + variable + textarea.value.substring(endPos);
-        
-        // Coloca o foco de volta no textarea
-        textarea.focus();
-        textarea.selectionStart = startPos + variable.length;
-        textarea.selectionEnd = startPos + variable.length;
+// Inicialização quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    // Carrega mensagem salva
+    loadSavedMessage();
+    
+    // Configura auto-salvamento
+    setupMessageAutoSave();
+    
+    // Adiciona eventos aos botões de variáveis
+    document.querySelectorAll('.variable-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const textarea = document.getElementById('messageTemplate');
+            const variable = this.getAttribute('data-var');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            
+            textarea.value = textarea.value.substring(0, startPos) + variable + textarea.value.substring(endPos);
+            textarea.focus();
+            textarea.selectionStart = startPos + variable.length;
+            textarea.selectionEnd = startPos + variable.length;
+            
+            // Dispara evento input para salvar automaticamente
+            const event = new Event('input');
+            textarea.dispatchEvent(event);
+        });
     });
-});
 
-document.getElementById('transferenciaSimulatorForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const courseIndex = parseInt(document.getElementById('course').value);
-    const shift = document.querySelector('input[name="shift"]:checked').value;
-    const messageTemplate = document.getElementById('messageTemplate').value;
-    
-    // Verificar se o curso está disponível no turno selecionado
-    const coursePrice = coursesData[shift].prices[courseIndex];
-    if (coursePrice === 0) {
-        showError("Não existem valores cadastrados para este curso no turno selecionado.");
-        return;
-    }
-    
-    // Obter desconto padrão (60% para transferência)
-    const discount = 60;
-    const punctualityDiscount = 10;
-    
-    // Calcular valor final (desconto em cascata)
-    let finalPrice = coursePrice * (1 - discount/100);
-    finalPrice = finalPrice * (1 - punctualityDiscount/100);
-    
-    // Formatar valores monetários
-    const formattedFullPrice = coursePrice.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
+    // Configura o formulário de transferência
+    document.getElementById('transferenciaSimulatorForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const courseIndex = parseInt(document.getElementById('course').value);
+        if (isNaN(courseIndex)) {
+            showError("Por favor, selecione um curso válido.");
+            return;
+        }
+        
+        const shift = document.querySelector('input[name="shift"]:checked').value;
+        const messageTemplate = document.getElementById('messageTemplate').value;
+        
+        // Verificar se o curso está disponível no turno selecionado
+        const coursePrice = coursesData[shift].prices[courseIndex];
+        if (coursePrice === 0) {
+            showError("Não existem valores cadastrados para este curso no turno selecionado.");
+            return;
+        }
+        
+        // Obter desconto padrão (60% para transferência)
+        const discount = 60;
+        const punctualityDiscount = 10;
+        
+        // Calcular valor final (desconto em cascata)
+        let finalPrice = coursePrice * (1 - discount/100);
+        finalPrice = finalPrice * (1 - punctualityDiscount/100);
+        
+        // Formatar valores monetários
+        const formattedFullPrice = coursePrice.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+        
+        const formattedFinalPrice = finalPrice.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+        
+        // Substituir variáveis no template
+        let resultMessage = messageTemplate
+            .replace(/{course}/g, coursesData.names[courseIndex])
+            .replace(/{shift}/g, shift === 'matutino' ? 'Matutino' : 'Noturno')
+            .replace(/{fullPrice}/g, formattedFullPrice)
+            .replace(/{discount}/g, discount)
+            .replace(/{finalPrice}/g, formattedFinalPrice);
+        
+        // Exibir resultados
+        displayResults(resultMessage);
     });
-    
-    const formattedFinalPrice = finalPrice.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-    
-    // Substituir variáveis no template
-    let resultMessage = messageTemplate
-        .replace(/{course}/g, coursesData.names[courseIndex])
-        .replace(/{shift}/g, shift === 'matutino' ? 'Matutino' : 'Noturno')
-        .replace(/{fullPrice}/g, formattedFullPrice)
-        .replace(/{discount}/g, discount)
-        .replace(/{finalPrice}/g, formattedFinalPrice);
-    
-    // Exibir resultados
-    displayResults(resultMessage);
 });
 
 function displayResults(message) {
@@ -154,16 +171,3 @@ function displayResults(message) {
         });
     });
 }
-
-function showError(message) {
-    const resultsDiv = document.getElementById('results');
-    const resultContent = document.getElementById('resultContent');
-    
-    resultContent.innerHTML = `
-        <div class="error-message">${message}</div>
-    `;
-    
-    resultsDiv.style.display = 'block';
-
-}
-
