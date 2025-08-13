@@ -41,75 +41,33 @@ const coursesData = {
     }
 };
 
-// Adiciona eventos aos botões de variáveis
-document.querySelectorAll('.variable-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const textarea = document.getElementById('messageTemplate');
-        const variable = this.getAttribute('data-var');
-        const startPos = textarea.selectionStart;
-        const endPos = textarea.selectionEnd;
-        
-        // Insere a variável na posição do cursor
-        textarea.value = textarea.value.substring(0, startPos) + variable + textarea.value.substring(endPos);
-        
-        // Coloca o foco de volta no textarea
-        textarea.focus();
-        textarea.selectionStart = startPos + variable.length;
-        textarea.selectionEnd = startPos + variable.length;
-    });
-});
+// Função para carregar mensagem salva
+function loadSavedMessage() {
+    const savedMessage = localStorage.getItem('customMessage');
+    if (savedMessage) {
+        document.getElementById('messageTemplate').value = savedMessage;
+    }
+}
 
-// Função principal do formulário
-document.getElementById('vestibularSimulatorForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const courseIndex = parseInt(document.getElementById('course').value);
-    const shift = document.querySelector('input[name="shift"]:checked').value;
-    const messageTemplate = document.getElementById('messageTemplate').value;
-    
-    // Verificar se o curso está disponível no turno selecionado
-    const coursePrice = coursesData[shift].prices[courseIndex];
-    if (coursePrice === 0) {
-        showError("Não existem valores cadastrados para este curso no turno selecionado.");
-        return;
-    }
-    
-    // Obter desconto padrão do vestibular
-    const discount = coursesData[shift].discounts[courseIndex];
-    const punctualityDiscount = 10; // 10% fixo de pontualidade
-    
-    // Calcular valor final (desconto em cascata)
-    let finalPrice;
-    if (discount === 100) {
-        finalPrice = 0; // 100% de desconto
-    } else {
-        finalPrice = coursePrice * (1 - discount/100);
-        finalPrice = finalPrice * (1 - punctualityDiscount/100); // +10% de pontualidade
-    }
-    
-    // Formatar valores monetários
-    const formattedFullPrice = coursePrice.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
+// Função para configurar auto-salvamento da mensagem
+function setupMessageAutoSave() {
+    const messageTextarea = document.getElementById('messageTemplate');
+    messageTextarea.addEventListener('input', function() {
+        localStorage.setItem('customMessage', this.value);
     });
+}
+
+// Função para exibir mensagens de erro
+function showError(message) {
+    const resultsDiv = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
     
-    const formattedFinalPrice = finalPrice === 0 ? 'GRATUIDADE' : 
-        finalPrice.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        });
+    resultContent.innerHTML = `
+        <div class="error-message">${message}</div>
+    `;
     
-    // Substituir variáveis no template
-    let resultMessage = messageTemplate
-        .replace(/{course}/g, coursesData.names[courseIndex])
-        .replace(/{shift}/g, shift === 'matutino' ? 'Matutino' : 'Noturno')
-        .replace(/{fullPrice}/g, formattedFullPrice)
-        .replace(/{discount}/g, discount)
-        .replace(/{finalPrice}/g, formattedFinalPrice);
-    
-    // Exibir resultados
-    displayResults(resultMessage);
-});
+    resultsDiv.style.display = 'block';
+}
 
 // Função para exibir resultados
 function displayResults(message) {
@@ -119,7 +77,6 @@ function displayResults(message) {
     resultContent.innerHTML = `<pre>${message}</pre>`;
     resultsDiv.style.display = 'block';
     
-    // Configurar botão de copiar
     setupCopyButton();
 }
 
@@ -144,19 +101,96 @@ function setupCopyButton() {
     });
 }
 
-// Função para exibir mensagens de erro
-function showError(message) {
-    const resultsDiv = document.getElementById('results');
-    const resultContent = document.getElementById('resultContent');
-    
-    resultContent.innerHTML = `
-        <div class="error-message">${message}</div>
-    `;
-    
-    resultsDiv.style.display = 'block';
-}
-
-// Inicialização (se necessário)
+// Inicialização quando a página carrega
 document.addEventListener('DOMContentLoaded', function() {
-    // Qualquer inicialização necessária quando a página carregar
+    // Carrega mensagem salva
+    loadSavedMessage();
+    
+    // Configura auto-salvamento
+    setupMessageAutoSave();
+    
+    // Adiciona eventos aos botões de variáveis
+    document.querySelectorAll('.variable-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const textarea = document.getElementById('messageTemplate');
+            const variable = this.getAttribute('data-var');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            
+            textarea.value = textarea.value.substring(0, startPos) + variable + textarea.value.substring(endPos);
+            textarea.focus();
+            textarea.selectionStart = startPos + variable.length;
+            textarea.selectionEnd = startPos + variable.length;
+            
+            // Dispara evento input para salvar automaticamente
+            const event = new Event('input');
+            textarea.dispatchEvent(event);
+        });
+    });
+
+    // Função principal do formulário
+    document.getElementById('vestibularSimulatorForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const courseIndex = parseInt(document.getElementById('course').value);
+        const shift = document.querySelector('input[name="shift"]:checked').value;
+        const messageTemplate = document.getElementById('messageTemplate').value;
+        
+        // Validação do curso
+        if (isNaN(courseIndex)) {
+            showError("Por favor, selecione um curso válido.");
+            return;
+        }
+        
+        // Verificar se o curso está disponível no turno selecionado
+        const coursePrice = coursesData[shift].prices[courseIndex];
+        if (coursePrice === 0) {
+            showError("Não existem valores cadastrados para este curso no turno selecionado.");
+            return;
+        }
+        
+        // Obter desconto padrão do vestibular
+        const discount = coursesData[shift].discounts[courseIndex];
+        const punctualityDiscount = 10; // 10% fixo de pontualidade
+        
+        // Calcular valor final (desconto em cascata)
+        let finalPrice;
+        if (discount === 100) {
+            finalPrice = 0; // 100% de desconto
+        } else {
+            finalPrice = coursePrice * (1 - discount/100);
+            finalPrice = finalPrice * (1 - punctualityDiscount/100); // +10% de pontualidade
+        }
+        
+        // Formatar valores monetários
+        const formattedFullPrice = coursePrice.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+        
+        const formattedFinalPrice = finalPrice === 0 ? 'GRATUIDADE' : 
+            finalPrice.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+        
+        // Substituir variáveis no template
+        let resultMessage = messageTemplate
+            .replace(/{course}/g, coursesData.names[courseIndex])
+            .replace(/{shift}/g, shift === 'matutino' ? 'Matutino' : 'Noturno')
+            .replace(/{fullPrice}/g, formattedFullPrice)
+            .replace(/{discount}/g, discount)
+            .replace(/{finalPrice}/g, formattedFinalPrice);
+        
+        // Exibir resultados
+        displayResults(resultMessage);
+    });
+
+    // (Opcional) Botão para resetar mensagem ao padrão
+    document.getElementById('resetTemplate')?.addEventListener('click', function() {
+        if (confirm('Deseja restaurar a mensagem padrão? Isso apagará suas alterações.')) {
+            localStorage.removeItem('customMessage');
+            document.getElementById('messageTemplate').value = `{course} - {shift}\n\nDe: {fullPrice}\n\nCom desconto de {discount}% + 10% de pontualidade\n\nPor: {finalPrice}`;
+        }
+    });
 });
