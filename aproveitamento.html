@@ -824,6 +824,22 @@
             // Filtrar apenas disciplinas da série inicial ou superior
             const serieInicial = document.getElementById('serieInicial').value;
             const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
+
+            // Agrupar por série e ordenar por série (crescente)
+            const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a, b) => a - b);
+            
+            series.forEach(serie => {
+                if (y > 200) {
+                    doc.addPage();
+                    y = margin;
+                }
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'bold');
+                doc.text(`${serie}ª Série:`, margin, y);
+                y += 7;
+                
+                const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
             
             // Agrupar por série
             const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
@@ -903,14 +919,24 @@
             doc.text(`Grade Invertida: ${gradeInvertida}`, margin, y);
             y += 15;
             
-            // Adicionar texto informativo
-            const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicada pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
-            
+           // Adicionar texto informativo
+           const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicada pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
+
+            // Configurar estilo em negrito
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(10);
+
+            // Usar texto justificado
             const splitText = doc.splitTextToSize(infoText, pageWidth - 2 * margin);
-            doc.setFontSize(12);
-            doc.text(splitText, margin, y);
-            align: 'justify'
+            doc.text(splitText, margin, y, {
+                maxWidth: pageWidth - 2 * margin,
+                align: 'justify'
+            });
+            
             y += splitText.length * 5 + 10;
+            
+            // Voltar ao estilo normal para o restante do conteúdo
+            doc.setFont(undefined, 'normal');
             
             // Adicionar disciplinas dispensadas
             const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
