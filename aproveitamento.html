@@ -8,12 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-          <a href="index.html" class="home-icon">
-            <i class="fas fa-home"></i>
-        </a>
-        <div class="logo-container">
-    <body>
-    <style>     
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -42,6 +37,15 @@
             color: white;
             padding: 20px;
             text-align: center;
+            position: relative;
+        }
+
+        .home-icon {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            color: white;
+            font-size: 24px;
         }
 
         h1 {
@@ -293,12 +297,23 @@
             .disciplinas-list {
                 grid-template-columns: 1fr;
             }
+            
+            .home-icon {
+                position: relative;
+                left: 0;
+                top: 0;
+                margin-bottom: 15px;
+                display: inline-block;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
+            <a href="index.html" class="home-icon">
+                <i class="fas fa-home"></i>
+            </a>
             <h1>Sistema de Matriz Curricular</h1>
             <p>Selecione o curso, série inicial e configure as disciplinas</p>
         </header>
@@ -414,7 +429,7 @@
         let disciplinasFiltradas = [];
         let disciplinasSelecionadas = [];
         let disciplinaEditando = null;
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzdUQPIoDQYJZn3UpjstbBwMfMIjrufvgCT9tfE5gnFyXLFcXh9tbwVEXpm9jAGZ2x50g/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzIonzx8HwKDzR_0loLd-2a7w3UQ_JA7Nv-2kpF9cBi5m6mtVHZcj8W4TJGnh2VRtDpJQ/exec';
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -580,7 +595,7 @@
             const series = [...new Set(todasDisciplinas
                 .filter(d => d.curso === curso)
                 .map(d => d.serie)
-            )].sort();
+            )].sort((a, b) => a - b);
             
             series.forEach(serie => {
                 const option = document.createElement('option');
@@ -621,7 +636,7 @@
             // Limpar disciplinas selecionadas
             disciplinasSelecionadas = [];
             
-            // Filtrar disciplinas pelo curso e série inicial ou superior
+            // Filtrar disciplinas pelo curso
             const disciplinasParaCursar = todasDisciplinas.filter(d => 
                 d.curso === curso
             );
@@ -803,7 +818,7 @@
                 dispensadas.forEach(disciplina => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${disciplina.nome}</td>
+                        <td>${disciplina.nome</td>
                         <td>${disciplina.serie}ª Série</td>
                         <td><span class="status-badge status-dispensada">Dispensada</span></td>
                     `;
@@ -827,22 +842,6 @@
 
             // Agrupar por série e ordenar por série (crescente)
             const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a, b) => a - b);
-            
-            series.forEach(serie => {
-                if (y > 200) {
-                    doc.addPage();
-                    y = margin;
-                }
-                
-                doc.setFontSize(11);
-                doc.setFont(undefined, 'bold');
-                doc.text(`${serie}ª Série:`, margin, y);
-                y += 7;
-                
-                const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
-            
-            // Agrupar por série
-            const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
             
             series.forEach(serie => {
                 const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
@@ -919,8 +918,8 @@
             doc.text(`Grade Invertida: ${gradeInvertida}`, margin, y);
             y += 15;
             
-           // Adicionar texto informativo
-           const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicada pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
+            // Adicionar texto informativo
+            const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicada pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
 
             // Configurar estilo em negrito
             doc.setFont(undefined, 'bold');
@@ -983,8 +982,8 @@
                 doc.text('Grade Organizada:', margin, y);
                 y += 10;
                 
-                // Agrupar por série
-                const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
+                // Agrupar por série e ordenar por série (crescente)
+                const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a, b) => a - b);
                 
                 series.forEach(serie => {
                     if (y > 200) {
