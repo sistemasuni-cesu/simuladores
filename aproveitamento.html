@@ -796,45 +796,86 @@
             fecharModal();
         }
 
-        function atualizarGradeFinal() {
-            // Separar disciplinas dispensadas
-            const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
-            const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
-            
-            // Exibir disciplinas dispensadas
-            const tabelaDispensadas = document.getElementById('tabelaDispensadas');
-            tabelaDispensadas.innerHTML = '';
-            
-            if (dispensadas.length === 0) {
-                tabelaDispensadas.innerHTML = `
-                    <tbody>
-                        <tr>
-                            <td colspan="3" style="text-align: center;">Nenhuma disciplina dispensada</td>
-                        </tr>
-                    </tbody>
+            function atualizarGradeFinal() {
+        // Separar disciplinas dispensadas
+        const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
+        const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
+        
+        // Exibir disciplinas dispensadas
+        const tabelaDispensadas = document.getElementById('tabelaDispensadas');
+        tabelaDispensadas.innerHTML = '';
+        
+        if (dispensadas.length === 0) {
+            tabelaDispensadas.innerHTML = `
+                <tbody>
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Nenhuma disciplina dispensada</td>
+                    </tr>
+                </tbody>
+            `;
+        } else {
+            let tbody = document.createElement('tbody');
+            dispensadas.forEach(disciplina => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${disciplina.nome}</td>
+                    <td>${disciplina.serie}ª Série</td>
+                    <td><span class="status-badge status-dispensada">Dispensada</span></td>
                 `;
-            } else {
-                let tbody = document.createElement('tbody');
-                dispensadas.forEach(disciplina => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${disciplina.nome</td>
-                        <td>${disciplina.serie}ª Série</td>
-                        <td><span class="status-badge status-dispensada">Dispensada</span></td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                tabelaDispensadas.appendChild(tbody);
-            }
+                tbody.appendChild(row);
+            });
+            tabelaDispensadas.appendChild(tbody);
+        }
+        
+        // Exibir grade organizada
+        const tabelaGrade = document.getElementById('tabelaGrade');
+        tabelaGrade.innerHTML = '';
+        
+        if (naoDispensadas.length === 0) {
+            tabelaGrade.innerHTML = '<p>Nenhuma disciplina para exibir na grade</p>';
+            return;
+        }
+        
+        // Filtrar apenas disciplinas da série inicial ou superior
+        const serieInicial = document.getElementById('serieInicial').value;
+        const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
+
+        // Agrupar por série e ordenar por série (crescente)
+        const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a, b) => a - b);
+        
+        series.forEach(serie => {
+            const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
             
-            // Exibir grade organizada
-            const tabelaGrade = document.getElementById('tabelaGrade');
-            tabelaGrade.innerHTML = '';
+            const section = document.createElement('div');
+            section.className = 'serie-section';
+            section.innerHTML = `<h3>${serie}ª Série</h3>`;
             
-            if (naoDispensadas.length === 0) {
-                tabelaGrade.innerHTML = '<p>Nenhuma disciplina para exibir na grade</p>';
-                return;
-            }
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Status</th>
+                        <th>Ano</th>
+                        <th>Período</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${disciplinasSerie.map(d => `
+                        <tr>
+                            <td>${d.nome}</td>
+                            <td><span class="status-badge status-${d.status}">${formatStatus(d.status)}</span></td>
+                            <td>${d.ano}</td>
+                            <td>${d.periodo}º Período</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            
+            section.appendChild(table);
+            tabelaGrade.appendChild(section);
+        });
+    }
             
             // Filtrar apenas disciplinas da série inicial ou superior
             const serieInicial = document.getElementById('serieInicial').value;
