@@ -906,11 +906,12 @@
             y += 15;
             
             // Adicionar texto informativo
-            const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicadas pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
+            const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicada pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
             
             const splitText = doc.splitTextToSize(infoText, pageWidth - 2 * margin);
-            doc.setFontSize(10);
+            doc.setFontSize(12);
             doc.text(splitText, margin, y);
+            align: 'justify'
             y += splitText.length * 5 + 10;
             
             // Adicionar disciplinas dispensadas
