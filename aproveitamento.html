@@ -1,135 +1,1005 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- Adicione isso no <head> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aproveitamento de Estudos - UNICESUMAR</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Adicionando as bibliotecas para geração de PDF -->
+    <title>Sistema de Matriz Curricular</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: #ecf0f1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: #7f8c8d;
+        }
+
+        .disciplinas-container {
+            padding: 20px;
+        }
+
+        .disciplinas-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .disciplina-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .disciplina-card:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .disciplina-card h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .disciplina-card p {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .grade-final {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+        }
+
+        .grade-section {
+            margin-bottom: 30px;
+        }
+
+        .grade-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+
+        .actions {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-dispensada {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .status-adaptacao {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-cursar {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+            font-style: italic;
+        }
+
+        .info-text {
+            background: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.5;
+            border-left: 4px solid #3498db;
+        }
+
+        .serie-anterior {
+            opacity: 0.7;
+            background-color: #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .disciplinas-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <a href="index.html" class="home-icon">
-            <i class="fas fa-home"></i>
-        </a>
-        <div class="logo-container">
-            <img src="https://venhaparaunicesumar.com.br/wp-content/themes/unicesumar/images/logo-unicesumar.png" alt="UNICESUMAR Logo">
-        </div>
-        <h1>Aproveitamento de Estudos - UNICESUMAR</h1>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Sistema de Matriz Curricular</h1>
+            <p>Selecione o curso, série inicial e configure as disciplinas</p>
+        </header>
 
-    <main class="container">
-        <div class="input-section">
+        <div class="controls">
             <div class="form-group">
-                <label for="course">Curso:</label>
-                <select id="course" name="course" required>
-                    <option value="">Selecione um curso</option>
-                    <option value="0">GRADUAÇÃO EM ADMINISTRAÇÃO</option>
-                    <option value="1">GRADUAÇÃO EM AGRONOMIA</option>
-                    <option value="2">GRADUAÇÃO EM ARQUITETURA E URBANISMO</option>
-                    <option value="3">GRADUAÇÃO EM BIOMEDICINA</option>
-                    <option value="4">GRADUAÇÃO EM CIÊNCIAS CONTÁBEIS</option>
-                    <option value="5">GRADUAÇÃO EM COMUNICAÇÃO SOCIAL</option>
-                    <option value="6">GRADUAÇÃO EM DIREITO</option>
-                    <option value="7">GRADUAÇÃO EM ENFERMAGEM</option>
-                    <option value="8">GRADUAÇÃO EM ENGENHARIA CIVIL</option>
-                    <option value="9">GRADUAÇÃO EM ENGENHARIA DE SOFTWARE</option>
-                    <option value="10">GRADUAÇÃO EM ENGENHARIA MECÂNICA</option>
-                    <option value="11">GRADUAÇÃO EM FARMÁCIA</option>
-                    <option value="12">GRADUAÇÃO EM FISIOTERAPIA</option>
-                    <option value="13">GRADUAÇÃO EM MEDICINA VETERINÁRIA</option>
-                    <option value="14">GRADUAÇÃO EM NUTRIÇÃO</option>
-                    <option value="15">GRADUAÇÃO EM ODONTOLOGIA</option>
-                    <option value="16">GRADUAÇÃO EM PEDAGOGIA</option>
-                    <option value="17">GRADUAÇÃO EM PSICOLOGIA</option>
-                    <option value="18">SUPERIOR DE TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS</option>
-                    <option value="19">SUPERIOR DE TECNOLOGIA EM ESTÉTICA E COSMÉTICA</option>
-                    <option value="20">SUPERIOR DE TECNOLOGIA EM PROCESSOS GERENCIAIS</option>
+                <label for="curso">Selecione o Curso:</label>
+                <select id="curso">
+                    <option value="">-- Selecione um curso --</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Turno:</label>
-                <div class="radio-group">
-                    <input type="radio" id="matutino" name="shift" value="matutino" checked>
-                    <label for="matutino">Matutino</label>
-                    <input type="radio" id="noturno" name="shift" value="noturno">
-                    <label for="noturno">Noturno</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="initialSeries">Série Inicial:</label>
-                <select id="initialSeries" name="initialSeries" required>
-                    <option value="1">1ª Série</option>
-                    <option value="2">2ª Série</option>
-                    <option value="3">3ª Série</option>
-                    <option value="4">4ª Série</option>
-                    <option value="5">5ª Série</option>
-                    <option value="6">6ª Série</option>
-                    <option value="7">7ª Série</option>
-                    <option value="8">8ª Série</option>
-                    <option value="9">9ª Série</option>
-                    <option value="10">10ª Série</option>
+                <label for="serieInicial">Série Inicial:</label>
+                <select id="serieInicial" disabled>
+                    <option value="">-- Selecione a série inicial --</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Grade Invertida:</label>
-                <div class="radio-group">
-                    <input type="radio" id="invertedNo" name="inverted" value="false" checked>
-                    <label for="invertedNo">Não</label>
-                    <input type="radio" id="invertedYes" name="inverted" value="true">
-                    <label for="invertedYes">Sim</label>
+                <label for="gradeInvertida">Grade Invertida:</label>
+                <select id="gradeInvertida" disabled>
+                    <option value="nao">Não</option>
+                    <option value="sim">Sim</option>
+                </select>
+            </div>
+
+            <div class="form-group search-box">
+                <label for="buscaDisciplina">Buscar Disciplina:</label>
+                <input type="text" id="buscaDisciplina" placeholder="Digite o nome da disciplina" disabled>
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <div class="disciplinas-container">
+            <h2>Disciplinas Disponíveis</h2>
+            <div class="info-text">
+                <strong>Nota:</strong> Todas as disciplinas a partir da série selecionada serão automaticamente marcadas como "Cursar". 
+                Você só precisa selecionar as disciplinas que deseja dispensar ou que necessitam de adaptação.
+            </div>
+            <div id="listaDisciplinas" class="disciplinas-list">
+                <div class="loading">Carregando dados do Google Sheets...</div>
+            </div>
+        </div>
+
+        <div class="grade-final">
+            <div id="gradeDispensadas" class="grade-section">
+                <h3>Disciplinas Dispensadas</h3>
+                <table id="tabelaDispensadas">
+                    <thead>
+                        <tr>
+                            <th>Disciplina</th>
+                            <th>Série</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3" style="text-align: center;">Nenhuma disciplina dispensada</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="gradeOrganizada" class="grade-section">
+                <h3>Grade a Partir da Série Inicial</h3>
+                <div id="tabelaGrade">
+                    <p>Nenhuma disciplina para exibir na grade</p>
                 </div>
             </div>
-
-            <div class="form-group full-width">
-                <label for="dataInput">Cole os dados da planilha de aproveitamento:</label>
-                <textarea id="dataInput" rows="10" class="data-input"></textarea>
-            </div>
-
-            <button id="processButton" class="btn-calculate">Processar Dados</button>
         </div>
 
-        <div id="resultsSection" class="results-container" style="display: none;">
-            <h2>Resultado do Aproveitamento</h2>
-            
-            <div class="tabs">
-                <button class="tab-button active" data-tab="organized">Grade Organizada</button>
-                <button class="tab-button" data-tab="pending">Disciplinas Pendentes</button>
-            </div>
-            
-            <div id="organizedTab" class="tab-content active">
-                <div id="organizedResults"></div>
-            </div>
-            
-            <div id="pendingTab" class="tab-content">
-                <div id="pendingResults"></div>
-                <button id="finalizeButton" class="btn-calculate">Finalizar Ajustes</button>
-            </div>
-            
-            <button id="downloadButton" class="btn-copy">Baixar PDF</button>
+        <div class="actions">
+            <button id="btnGerarPDF" class="btn btn-primary">Baixar PDF</button>
         </div>
+    </div>
 
-        <div id="finalResults" class="results-container" style="display: none;">
-            <h2>Resultado Final</h2>
-            <div id="finalResultsContent"></div>
-            <button id="finalDownloadButton" class="btn-copy">Baixar PDF Final</button>
+    <!-- Modal para editar disciplina -->
+    <div id="modalDisciplina" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Configurar Disciplina</h2>
+            <div class="form-group">
+                <label for="disciplinaNome">Disciplina:</label>
+                <input type="text" id="disciplinaNome" readonly>
+            </div>
+            <div class="form-group">
+                <label for="disciplinaStatus">Status:</label>
+                <select id="disciplinaStatus">
+                    <option value="cursar">Cursar</option>
+                    <option value="dispensada">Dispensada</option>
+                    <option value="adaptacao">Adaptação</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="disciplinaAno">Ano:</label>
+                <input type="number" id="disciplinaAno" min="2020" max="2030" value="2025">
+            </div>
+            <div class="form-group">
+                <label for="disciplinaPeriodo">Período:</label>
+                <select id="disciplinaPeriodo">
+                    <option value="1">1º Período</option>
+                    <option value="2" selected>2º Período</option>
+                </select>
+            </div>
+            <button id="btnSalvarDisciplina" class="btn btn-primary">Salvar</button>
         </div>
-    </main>
+    </div>
 
-    <footer>
-        <p>© 2023 UNICESUMAR - Todos os direitos reservados</p>
-    </footer>
+    <script>
+        // Variáveis globais
+        let todasDisciplinas = [];
+        let disciplinasFiltradas = [];
+        let disciplinasSelecionadas = [];
+        let disciplinaEditando = null;
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzdUQPIoDQYJZn3UpjstbBwMfMIjrufvgCT9tfE5gnFyXLFcXh9tbwVEXpm9jAGZ2x50g/exec';
 
-    <script src="aproveitamento.js"></script>
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarEventos();
+            carregarDadosDaAPI();
+        });
+
+        // Carregar dados da API do Google Sheets
+        async function carregarDadosDaAPI() {
+            try {
+                document.getElementById('listaDisciplinas').innerHTML = '<div class="loading">Carregando dados do Google Sheets...</div>';
+                
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar dados da API: ' + response.status);
+                }
+                
+                const dados = await response.json();
+                todasDisciplinas = processarDados(dados);
+                popularCursos();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                document.getElementById('listaDisciplinas').innerHTML = 
+                    '<div class="error-message">Erro ao carregar dados. Verifique o console para mais detalhes.</div>';
+                    
+                // Usar dados de exemplo em caso de erro
+                usarDadosExemplo();
+            }
+        }
+
+        // Processar dados da API para o formato esperado
+        function processarDados(dados) {
+            console.log("Dados recebidos da API:", dados);
+            
+            return dados.map((item, index) => {
+                // Verificar se os dados estão no formato esperado
+                return {
+                    id: index + 1,
+                    nome: item['Nome da disciplina'] || item.nome || item.Disciplina || 'Disciplina sem nome',
+                    serie: parseInt(item.Série || item.serie || item.Serie || 1),
+                    curso: item.Curso || item.curso || 'Curso não especificado',
+                    gradeInvertida: (item['Grade invertida'] || item.gradeInvertida || '').toString().toLowerCase() === 'sim'
+                };
+            });
+        }
+
+        // Função para usar dados de exemplo em caso de erro
+        function usarDadosExemplo() {
+            console.log("Usando dados de exemplo...");
+            
+            todasDisciplinas = [
+                { id: 1, nome: "Cálculo I", serie: 1, curso: "Engenharia de Software", gradeInvertida: false },
+                { id: 2, nome: "Programação I", serie: 1, curso: "Engenharia de Software", gradeInvertida: false },
+                { id: 3, nome: "Algoritmos", serie: 1, curso: "Engenharia de Software", gradeInvertida: false },
+                { id: 4, nome: "Banco de Dados", serie: 2, curso: "Engenharia de Software", gradeInvertida: false },
+                { id: 5, nome: "Engenharia de Requisitos", serie: 2, curso: "Engenharia de Software", gradeInvertida: false },
+                { id: 6, nome: "Estrutura de Dados", serie: 2, curso: "Engenharia de Software", gradeInvertida: true },
+                { id: 7, nome: "Direito Civil", serie: 1, curso: "Direito", gradeInvertida: false },
+                { id: 8, nome: "Direito Penal", serie: 2, curso: "Direito", gradeInvertida: false },
+                { id: 9, nome: "Introdução à Administração", serie: 1, curso: "Administração", gradeInvertida: false },
+                { id: 10, nome: "Contabilidade", serie: 1, curso: "Administração", gradeInvertida: false }
+            ];
+            
+            popularCursos();
+        }
+
+        // Popular dropdown de cursos com base nos dados da API
+        function popularCursos() {
+            const selectCurso = document.getElementById('curso');
+            
+            // Obter cursos únicos
+            const cursosUnicos = [...new Set(todasDisciplinas.map(item => item.curso))];
+            
+            // Limpar opções existentes, mantendo a primeira
+            while (selectCurso.options.length > 1) {
+                selectCurso.remove(1);
+            }
+            
+            // Adicionar cursos ao dropdown
+            cursosUnicos.forEach(curso => {
+                const option = document.createElement('option');
+                option.value = curso;
+                option.textContent = curso;
+                selectCurso.appendChild(option);
+            });
+            
+            document.getElementById('listaDisciplinas').innerHTML = '<div class="loading">Selecione um curso para carregar as disciplinas</div>';
+        }
+
+        function inicializarEventos() {
+            // Evento para seleção de curso
+            document.getElementById('curso').addEventListener('change', function() {
+                const curso = this.value;
+                if (curso) {
+                    carregarSeries(curso);
+                    document.getElementById('serieInicial').disabled = false;
+                    document.getElementById('gradeInvertida').disabled = false;
+                    document.getElementById('buscaDisciplina').disabled = false;
+                } else {
+                    document.getElementById('serieInicial').disabled = true;
+                    document.getElementById('gradeInvertida').disabled = true;
+                    document.getElementById('buscaDisciplina').disabled = true;
+                    document.getElementById('listaDisciplinas').innerHTML = '<div class="loading">Selecione um curso para carregar as disciplinas</div>';
+                }
+            });
+
+            // Evento para seleção de série inicial
+            document.getElementById('serieInicial').addEventListener('change', function() {
+                const curso = document.getElementById('curso').value;
+                const serieInicial = this.value;
+                const gradeInvertida = document.getElementById('gradeInvertida').value === 'sim';
+                
+                if (curso && serieInicial) {
+                    filtrarDisciplinas(curso, serieInicial, gradeInvertida);
+                    // Inicializar todas as disciplinas como "cursar"
+                    inicializarDisciplinasComoCursar(curso, serieInicial, gradeInvertida);
+                }
+            });
+
+            // Evento para grade invertida
+            document.getElementById('gradeInvertida').addEventListener('change', function() {
+                const curso = document.getElementById('curso').value;
+                const serieInicial = document.getElementById('serieInicial').value;
+                const gradeInvertida = this.value === 'sim';
+                
+                if (curso && serieInicial) {
+                    filtrarDisciplinas(curso, serieInicial, gradeInvertida);
+                    // Inicializar todas as disciplinas como "cursar"
+                    inicializarDisciplinasComoCursar(curso, serieInicial, gradeInvertida);
+                }
+            });
+
+            // Evento para busca de disciplinas
+            document.getElementById('buscaDisciplina').addEventListener('input', function() {
+                filtrarPorNome(this.value);
+            });
+
+            // Evento para gerar PDF
+            document.getElementById('btnGerarPDF').addEventListener('click', gerarPDF);
+
+            // Eventos do modal
+            document.getElementById('btnSalvarDisciplina').addEventListener('click', salvarDisciplina);
+            document.querySelector('.close').addEventListener('click', fecharModal);
+            
+            // Fechar modal ao clicar fora dele
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('modalDisciplina');
+                if (event.target === modal) {
+                    fecharModal();
+                }
+            });
+        }
+
+        function carregarSeries(curso) {
+            const selectSerie = document.getElementById('serieInicial');
+            // Limpar opções existentes, mantendo a primeira
+            while (selectSerie.options.length > 1) {
+                selectSerie.remove(1);
+            }
+            
+            // Encontrar séries disponíveis para o curso
+            const series = [...new Set(todasDisciplinas
+                .filter(d => d.curso === curso)
+                .map(d => d.serie)
+            )].sort();
+            
+            series.forEach(serie => {
+                const option = document.createElement('option');
+                option.value = serie;
+                option.textContent = `${serie}ª Série`;
+                selectSerie.appendChild(option);
+            });
+        }
+
+        function calcularAnoPeriodo(serie, serieInicial) {
+            const diferencaSerie = serie - parseInt(serieInicial);
+            const anoBase = 2025;
+            const periodoBase = 2; // 2º período
+            
+            if (diferencaSerie < 0) {
+                // Séries anteriores: usar valores padrão
+                return { ano: anoBase, periodo: periodoBase };
+            }
+            
+            // Calcular ano e período com base na diferença de séries
+            const totalPeriodos = diferencaSerie * 2;
+            const anosAdicionais = Math.floor(totalPeriodos / 2);
+            const periodosAdicionais = totalPeriodos % 2;
+            
+            let ano = anoBase + anosAdicionais;
+            let periodo = periodoBase + periodosAdicionais;
+            
+            // Ajustar se período ultrapassar 2
+            if (periodo > 2) {
+                ano += 1;
+                periodo -= 2;
+            }
+            
+            return { ano, periodo };
+        }
+
+        function inicializarDisciplinasComoCursar(curso, serieInicial, gradeInvertida) {
+            // Limpar disciplinas selecionadas
+            disciplinasSelecionadas = [];
+            
+            // Filtrar disciplinas pelo curso e série inicial ou superior
+            const disciplinasParaCursar = todasDisciplinas.filter(d => 
+                d.curso === curso
+            );
+            
+            // Aplicar filtro de grade invertida se necessário
+            if (gradeInvertida) {
+                disciplinasParaCursar = disciplinasParaCursar.filter(d => d.gradeInvertida);
+            }
+            
+            // Inicializar todas as disciplinas como "cursar" com ano e período calculados
+            disciplinasSelecionadas = disciplinasParaCursar.map(disciplina => {
+                const { ano, periodo } = calcularAnoPeriodo(disciplina.serie, serieInicial);
+                
+                return {
+                    ...disciplina,
+                    status: disciplina.serie >= parseInt(serieInicial) ? 'cursar' : 'dispensada',
+                    ano,
+                    periodo: periodo.toString()
+                };
+            });
+            
+            // Atualizar a grade final
+            atualizarGradeFinal();
+        }
+
+        function filtrarDisciplinas(curso, serieInicial, gradeInvertida) {
+            // Filtrar disciplinas pelo curso (todas as séries)
+            disciplinasFiltradas = todasDisciplinas.filter(d => 
+                d.curso === curso
+            );
+            
+            // Aplicar filtro de grade invertida se necessário
+            if (gradeInvertida) {
+                disciplinasFiltradas = disciplinasFiltradas.filter(d => d.gradeInvertida);
+            }
+            
+            // Aplicar filtro de busca se houver
+            const termoBusca = document.getElementById('buscaDisciplina').value;
+            if (termoBusca) {
+                filtrarPorNome(termoBusca);
+            } else {
+                exibirDisciplinas(disciplinasFiltradas, serieInicial);
+            }
+        }
+
+        function filtrarPorNome(termo) {
+            const serieInicial = document.getElementById('serieInicial').value;
+            const disciplinasFiltradasPorNome = termo ? 
+                disciplinasFiltradas.filter(d => 
+                    d.nome.toLowerCase().includes(termo.toLowerCase())
+                ) : 
+                disciplinasFiltradas;
+            
+            exibirDisciplinas(disciplinasFiltradasPorNome, serieInicial);
+        }
+
+        function exibirDisciplinas(disciplinas, serieInicial) {
+            const container = document.getElementById('listaDisciplinas');
+            container.innerHTML = '';
+            
+            if (disciplinas.length === 0) {
+                container.innerHTML = '<div class="loading">Nenhuma disciplina encontrada.</div>';
+                return;
+            }
+            
+            disciplinas.forEach(disciplina => {
+                const card = document.createElement('div');
+                
+                // Verificar se a disciplina já foi configurada
+                const configExistente = disciplinasSelecionadas.find(d => d.id === disciplina.id);
+                const status = configExistente ? configExistente.status : (disciplina.serie >= parseInt(serieInicial) ? 'cursar' : 'dispensada');
+                
+                // Adicionar classe para séries anteriores
+                if (disciplina.serie < parseInt(serieInicial)) {
+                    card.className = 'disciplina-card serie-anterior';
+                } else {
+                    card.className = 'disciplina-card';
+                }
+                
+                card.innerHTML = `
+                    <h3>${disciplina.nome}</h3>
+                    <p>Série: ${disciplina.serie}ª | Status: <span class="status-badge status-${status}">${formatStatus(status)}</span></p>
+                    ${disciplina.serie < parseInt(serieInicial) ? '<p><em>Disciplina de série anterior</em></p>' : ''}
+                `;
+                
+                card.addEventListener('click', () => abrirModalDisciplina(disciplina));
+                container.appendChild(card);
+            });
+        }
+
+        function abrirModalDisciplina(disciplina) {
+            disciplinaEditando = disciplina;
+            
+            document.getElementById('disciplinaNome').value = disciplina.nome;
+            
+            // Se a disciplina já foi configurada antes, preencher com os valores salvos
+            const configExistente = disciplinasSelecionadas.find(d => d.id === disciplina.id);
+            if (configExistente) {
+                document.getElementById('disciplinaStatus').value = configExistente.status;
+                document.getElementById('disciplinaAno').value = configExistente.ano;
+                document.getElementById('disciplinaPeriodo').value = configExistente.periodo;
+            } else {
+                // Valores padrão calculados
+                const serieInicial = document.getElementById('serieInicial').value;
+                const { ano, periodo } = calcularAnoPeriodo(disciplina.serie, serieInicial);
+                
+                document.getElementById('disciplinaStatus').value = disciplina.serie >= parseInt(serieInicial) ? 'cursar' : 'dispensada';
+                document.getElementById('disciplinaAno').value = ano;
+                document.getElementById('disciplinaPeriodo').value = periodo.toString();
+            }
+            
+            document.getElementById('modalDisciplina').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalDisciplina').style.display = 'none';
+        }
+
+        function salvarDisciplina() {
+            if (!disciplinaEditando) return;
+            
+            const status = document.getElementById('disciplinaStatus').value;
+            const ano = document.getElementById('disciplinaAno').value;
+            const periodo = document.getElementById('disciplinaPeriodo').value;
+            
+            // Verificar se a disciplina já existe na lista
+            const index = disciplinasSelecionadas.findIndex(d => d.id === disciplinaEditando.id);
+            
+            if (index !== -1) {
+                // Atualizar disciplina existente
+                disciplinasSelecionadas[index] = {
+                    ...disciplinasSelecionadas[index],
+                    status,
+                    ano,
+                    periodo
+                };
+            } else {
+                // Adicionar nova disciplina
+                disciplinasSelecionadas.push({
+                    ...disciplinaEditando,
+                    status,
+                    ano,
+                    periodo
+                });
+            }
+            
+            atualizarGradeFinal();
+            // Atualizar a exibição das disciplinas para refletir as mudanças
+            const curso = document.getElementById('curso').value;
+            const serieInicial = document.getElementById('serieInicial').value;
+            const gradeInvertida = document.getElementById('gradeInvertida').value === 'sim';
+            
+            if (curso && serieInicial) {
+                filtrarDisciplinas(curso, serieInicial, gradeInvertida);
+            }
+            
+            fecharModal();
+        }
+
+        function atualizarGradeFinal() {
+            // Separar disciplinas dispensadas
+            const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
+            const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
+            
+            // Exibir disciplinas dispensadas
+            const tabelaDispensadas = document.getElementById('tabelaDispensadas');
+            tabelaDispensadas.innerHTML = '';
+            
+            if (dispensadas.length === 0) {
+                tabelaDispensadas.innerHTML = `
+                    <tbody>
+                        <tr>
+                            <td colspan="3" style="text-align: center;">Nenhuma disciplina dispensada</td>
+                        </tr>
+                    </tbody>
+                `;
+            } else {
+                let tbody = document.createElement('tbody');
+                dispensadas.forEach(disciplina => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${disciplina.nome}</td>
+                        <td>${disciplina.serie}ª Série</td>
+                        <td><span class="status-badge status-dispensada">Dispensada</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                tabelaDispensadas.appendChild(tbody);
+            }
+            
+            // Exibir grade organizada
+            const tabelaGrade = document.getElementById('tabelaGrade');
+            tabelaGrade.innerHTML = '';
+            
+            if (naoDispensadas.length === 0) {
+                tabelaGrade.innerHTML = '<p>Nenhuma disciplina para exibir na grade</p>';
+                return;
+            }
+            
+            // Filtrar apenas disciplinas da série inicial ou superior
+            const serieInicial = document.getElementById('serieInicial').value;
+            const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
+            
+            // Agrupar por série
+            const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
+            
+            series.forEach(serie => {
+                const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
+                
+                const section = document.createElement('div');
+                section.className = 'serie-section';
+                section.innerHTML = `<h3>${serie}ª Série</h3>`;
+                
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Disciplina</th>
+                            <th>Status</th>
+                            <th>Ano</th>
+                            <th>Período</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${disciplinasSerie.map(d => `
+                            <tr>
+                                <td>${d.nome}</td>
+                                <td><span class="status-badge status-${d.status}">${formatStatus(d.status)}</span></td>
+                                <td>${d.ano}</td>
+                                <td>${d.periodo}º Período</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                
+                section.appendChild(table);
+                tabelaGrade.appendChild(section);
+            });
+        }
+
+        function formatStatus(status) {
+            const statusMap = {
+                'cursar': 'Cursar',
+                'adaptacao': 'Adaptação',
+                'dispensada': 'Dispensada'
+            };
+            return statusMap[status] || status;
+        }
+
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurações iniciais
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 15;
+            let y = margin;
+            
+            // Adicionar título
+            const cursoSelect = document.getElementById('curso');
+            const serieSelect = document.getElementById('serieInicial');
+            const gradeInvertidaSelect = document.getElementById('gradeInvertida');
+            
+            const cursoNome = cursoSelect.options[cursoSelect.selectedIndex].text;
+            const serieNome = serieSelect.options[serieSelect.selectedIndex].text;
+            const gradeInvertida = gradeInvertidaSelect.value === 'sim' ? 'Sim' : 'Não';
+            
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Sistema de Matriz Curricular', pageWidth / 2, y, { align: 'center' });
+            y += 10;
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Curso: ${cursoNome}`, margin, y);
+            y += 7;
+            doc.text(`Série Inicial: ${serieNome}`, margin, y);
+            y += 7;
+            doc.text(`Grade Invertida: ${gradeInvertida}`, margin, y);
+            y += 15;
+            
+            // Adicionar texto informativo
+            const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicadas pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
+            
+            const splitText = doc.splitTextToSize(infoText, pageWidth - 2 * margin);
+            doc.setFontSize(10);
+            doc.text(splitText, margin, y);
+            y += splitText.length * 5 + 10;
+            
+            // Adicionar disciplinas dispensadas
+            const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
+            
+            if (dispensadas.length > 0) {
+                if (y > 200) {
+                    doc.addPage();
+                    y = margin;
+                }
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('Disciplinas Dispensadas:', margin, y);
+                y += 10;
+                
+                // Criar tabela de disciplinas dispensadas
+                const dispTableData = dispensadas.map(d => [d.nome, `${d.serie}ª Série`]);
+                
+                doc.autoTable({
+                    startY: y,
+                    head: [['Disciplina', 'Série']],
+                    body: dispTableData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [52, 152, 219] },
+                    margin: { left: margin, right: margin }
+                });
+                
+                y = doc.lastAutoTable.finalY + 10;
+            }
+            
+            // Adicionar grade organizada
+            const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
+            const serieInicial = document.getElementById('serieInicial').value;
+            const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
+            
+            if (disciplinasGrade.length > 0) {
+                if (y > 200) {
+                    doc.addPage();
+                    y = margin;
+                }
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('Grade Organizada:', margin, y);
+                y += 10;
+                
+                // Agrupar por série
+                const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
+                
+                series.forEach(serie => {
+                    if (y > 200) {
+                        doc.addPage();
+                        y = margin;
+                    }
+                    
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`${serie}ª Série:`, margin, y);
+                    y += 7;
+                    
+                    const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
+                    
+                    // Criar tabela para a série
+                    const tableData = disciplinasSerie.map(d => [
+                        d.nome, 
+                        formatStatus(d.status), 
+                        d.ano, 
+                        `${d.periodo}º Período`
+                    ]);
+                    
+                    doc.autoTable({
+                        startY: y,
+                        head: [['Disciplina', 'Status', 'Ano', 'Período']],
+                        body: tableData,
+                        theme: 'grid',
+                        headStyles: { fillColor: [52, 152, 219] },
+                        margin: { left: margin, right: margin }
+                    });
+                    
+                    y = doc.lastAutoTable.finalY + 10;
+                });
+            }
+            
+            // Adicionar data e rodapé
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.text(`Gerado em: ${new Date().toLocaleDateString()}`, pageWidth - margin, doc.internal.pageSize.getHeight() - 10, { align: 'right' });
+                doc.text(`Página ${i} de ${totalPages}`, margin, doc.internal.pageSize.getHeight() - 10);
+            }
+            
+            // Salvar o PDF
+            doc.save(`grade_curricular_${cursoNome.replace(/\s+/g, '_')}.pdf`);
+        }
+    </script>
 </body>
 </html>
