@@ -37,15 +37,6 @@
             color: white;
             padding: 20px;
             text-align: center;
-            position: relative;
-        }
-
-        .home-icon {
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            color: white;
-            font-size: 24px;
         }
 
         h1 {
@@ -297,23 +288,12 @@
             .disciplinas-list {
                 grid-template-columns: 1fr;
             }
-            
-            .home-icon {
-                position: relative;
-                left: 0;
-                top: 0;
-                margin-bottom: 15px;
-                display: inline-block;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <a href="index.html" class="home-icon">
-                <i class="fas fa-home"></i>
-            </a>
             <h1>Sistema de Matriz Curricular</h1>
             <p>Selecione o curso, série inicial e configure as disciplinas</p>
         </header>
@@ -429,7 +409,7 @@
         let disciplinasFiltradas = [];
         let disciplinasSelecionadas = [];
         let disciplinaEditando = null;
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzIonzx8HwKDzR_0loLd-2a7w3UQ_JA7Nv-2kpF9cBi5m6mtVHZcj8W4TJGnh2VRtDpJQ/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzdUQPIoDQYJZn3UpjstbBwMfMIjrufvgCT9tfE5gnFyXLFcXh9tbwVEXpm9jAGZ2x50g/exec';
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -595,7 +575,7 @@
             const series = [...new Set(todasDisciplinas
                 .filter(d => d.curso === curso)
                 .map(d => d.serie)
-            )].sort((a, b) => a - b);
+            )].sort();
             
             series.forEach(serie => {
                 const option = document.createElement('option');
@@ -637,7 +617,7 @@
             disciplinasSelecionadas = [];
             
             // Filtrar disciplinas pelo curso
-            const disciplinasParaCursar = todasDisciplinas.filter(d => 
+            let disciplinasParaCursar = todasDisciplinas.filter(d => 
                 d.curso === curso
             );
             
@@ -797,92 +777,51 @@
         }
 
         function atualizarGradeFinal() {
-        // Separar disciplinas dispensadas
-        const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
-        const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
-        
-        // Exibir disciplinas dispensadas
-        const tabelaDispensadas = document.getElementById('tabelaDispensadas');
-        tabelaDispensadas.innerHTML = '';
-        
-        if (dispensadas.length === 0) {
-            tabelaDispensadas.innerHTML = `
-                <tbody>
-                    <tr>
-                        <td colspan="3" style="text-align: center;">Nenhuma disciplina dispensada</td>
-                    </tr>
-                </tbody>
-            `;
-        } else {
-            let tbody = document.createElement('tbody');
-            dispensadas.forEach(disciplina => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${disciplina.nome}</td>
-                    <td>${disciplina.serie}ª Série</td>
-                    <td><span class="status-badge status-dispensada">Dispensada</span></td>
-                `;
-                tbody.appendChild(row);
-            });
-            tabelaDispensadas.appendChild(tbody);
-        }
-        
-        // Exibir grade organizada
-        const tabelaGrade = document.getElementById('tabelaGrade');
-        tabelaGrade.innerHTML = '';
-        
-        if (naoDispensadas.length === 0) {
-            tabelaGrade.innerHTML = '<p>Nenhuma disciplina para exibir na grade</p>';
-            return;
-        }
-        
-        // Filtrar apenas disciplinas da série inicial ou superior
-        const serieInicial = document.getElementById('serieInicial').value;
-        const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
-
-        // Agrupar por série e ordenar por série (crescente)
-        const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a, b) => a - b);
-        
-        series.forEach(serie => {
-            const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
+            // Separar disciplinas dispensadas
+            const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
+            const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
             
-            const section = document.createElement('div');
-            section.className = 'serie-section';
-            section.innerHTML = `<h3>${serie}ª Série</h3>`;
+            // Exibir disciplinas dispensadas
+            const tabelaDispensadas = document.getElementById('tabelaDispensadas');
+            tabelaDispensadas.innerHTML = '';
             
-            const table = document.createElement('table');
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Disciplina</th>
-                        <th>Status</th>
-                        <th>Ano</th>
-                        <th>Período</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${disciplinasSerie.map(d => `
+            if (dispensadas.length === 0) {
+                tabelaDispensadas.innerHTML = `
+                    <tbody>
                         <tr>
-                            <td>${d.nome}</td>
-                            <td><span class="status-badge status-${d.status}">${formatStatus(d.status)}</span></td>
-                            <td>${d.ano}</td>
-                            <td>${d.periodo}º Período</td>
+                            <td colspan="3" style="text-align: center;">Nenhuma disciplina dispensada</td>
                         </tr>
-                    `).join('')}
-                </tbody>
-            `;
+                    </tbody>
+                `;
+            } else {
+                let tbody = document.createElement('tbody');
+                dispensadas.forEach(disciplina => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${disciplina.nome}</td>
+                        <td>${disciplina.serie}ª Série</td>
+                        <td><span class="status-badge status-dispensada">Dispensada</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                tabelaDispensadas.appendChild(tbody);
+            }
             
-            section.appendChild(table);
-            tabelaGrade.appendChild(section);
-        });
-    }
+            // Exibir grade organizada
+            const tabelaGrade = document.getElementById('tabelaGrade');
+            tabelaGrade.innerHTML = '';
+            
+            if (naoDispensadas.length === 0) {
+                tabelaGrade.innerHTML = '<p>Nenhuma disciplina para exibir na grade</p>';
+                return;
+            }
             
             // Filtrar apenas disciplinas da série inicial ou superior
             const serieInicial = document.getElementById('serieInicial').value;
             const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
-
-            // Agrupar por série e ordenar por série (crescente)
-            const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a, b) => a - b);
+            
+            // Agrupar por série
+            const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
             
             series.forEach(serie => {
                 const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
@@ -960,23 +899,12 @@
             y += 15;
             
             // Adicionar texto informativo
-            const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicada pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
-
-            // Configurar estilo em negrito
-            doc.setFont(undefined, 'bold');
-            doc.setFontSize(10);
-
-            // Usar texto justificado
+            const infoText = "Organização da grade de disciplinas baseados no aproveitamento de estudos, as disciplinas de adaptação tem valores cobrados a parte. O prazo de término de seu curso fica alterado, e seguirá dessa maneira se cursar todas as disciplinas na ordem indicadas pela coordenação de curso. Caso tenha interesse em cancelar alguma disciplina de adaptação poderá fazer se dirigindo ao setor de multiatendimento, ela será ofertada novamente para você no ano seguinte.";
+            
             const splitText = doc.splitTextToSize(infoText, pageWidth - 2 * margin);
-            doc.text(splitText, margin, y, {
-                maxWidth: pageWidth - 2 * margin,
-                align: 'justify'
-            });
-            
+            doc.setFontSize(10);
+            doc.text(splitText, margin, y);
             y += splitText.length * 5 + 10;
-            
-            // Voltar ao estilo normal para o restante do conteúdo
-            doc.setFont(undefined, 'normal');
             
             // Adicionar disciplinas dispensadas
             const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
@@ -1023,8 +951,8 @@
                 doc.text('Grade Organizada:', margin, y);
                 y += 10;
                 
-                // Agrupar por série e ordenar por série (crescente)
-                const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a, b) => a - b);
+                // Agrupar por série
+                const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
                 
                 series.forEach(serie => {
                     if (y > 200) {
