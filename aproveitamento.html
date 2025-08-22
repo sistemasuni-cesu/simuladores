@@ -605,8 +605,8 @@
             
             // Ajustar se período ultrapassar 2
             if (periodo > 2) {
+                período -= 2;
                 ano += 1;
-                periodo -= 2;
             }
             
             return { ano, periodo };
@@ -821,7 +821,7 @@
             const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
             
             // Agrupar por série
-            const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort();
+            const series = [...new Set(disciplinasGrade.map(d => d.serie))].sort((a,b) a =>b);
             
             series.forEach(serie => {
                 const disciplinasSerie = disciplinasGrade.filter(d => d.serie === serie);
