@@ -458,7 +458,7 @@
             }
             
             return dados.map((item, index) => {
-                // Tentar diferentes formatos de campos que podem vir da planilha
+                // Tentar diferentes formatos de campos que podem venir da planilha
                 const nome = item['Nome da disciplina'] || item['Disciplina'] || item['nome'] || item['disciplina'] || 'Disciplina sem nome';
                 const serie = parseInt(item['Série'] || item['Serie'] || item['serie'] || item['Semestre'] || item['semestre'] || 1);
                 const curso = item['Curso'] || item['curso'] || 'Curso não especificado';
@@ -818,7 +818,6 @@
         function atualizarGradeFinal() {
             // Separar disciplinas dispensadas
             const dispensadas = disciplinasSelecionadas.filter(d => d.status === 'dispensada');
-            const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
             
             // Exibir disciplinas dispensadas
             const tabelaDispensadas = document.getElementById('tabelaDispensadas');
@@ -846,28 +845,28 @@
                 tabelaDispensadas.appendChild(tbody);
             }
             
-            // Exibir grade organizada
+            // Exibir grade organizada - AGORA INCLUINDO DISCIPLINAS DE ADAPTAÇÃO
             const tabelaGrade = document.getElementById('tabelaGrade');
             tabelaGrade.innerHTML = '';
+            
+            // Incluir todas as disciplinas que NÃO são dispensadas (cursar + adaptação)
+            const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
             
             if (naoDispensadas.length === 0) {
                 tabelaGrade.innerHTML = '<p>Nenhuma disciplina para exibir na grade</p>';
                 return;
             }
             
-            // Filtrar apenas disciplinas da série inicial ou superior
-            const serieInicial = document.getElementById('serieInicial').value;
-            const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
-            
             // Ordenar disciplinas por ano e período
-            disciplinasGrade.sort((a, b) => {
+            naoDispensadas.sort((a, b) => {
                 if (a.ano !== b.ano) return a.ano - b.ano;
-                return a.periodo - b.periodo;
+                if (a.periodo !== b.periodo) return a.periodo - b.periodo;
+                return a.serie - b.serie;
             });
             
             // Agrupar por ano e período
             const grupos = {};
-            disciplinasGrade.forEach(disciplina => {
+            naoDispensadas.forEach(disciplina => {
                 const chave = `${disciplina.ano}-${disciplina.periodo}`;
                 if (!grupos[chave]) {
                     grupos[chave] = [];
@@ -987,12 +986,10 @@
                 y = doc.lastAutoTable.finalY + 10;
             }
             
-            // Adicionar grade organizada
+            // Adicionar grade organizada - INCLUINDO DISCIPLINAS DE ADAPTAÇÃO
             const naoDispensadas = disciplinasSelecionadas.filter(d => d.status !== 'dispensada');
-            const serieInicial = document.getElementById('serieInicial').value;
-            const disciplinasGrade = naoDispensadas.filter(d => d.serie >= parseInt(serieInicial));
             
-            if (disciplinasGrade.length > 0) {
+            if (naoDispensadas.length > 0) {
                 if (y > 200) {
                     doc.addPage();
                     y = margin;
@@ -1004,14 +1001,15 @@
                 y += 10;
                 
                 // Ordenar disciplinas por ano e período
-                disciplinasGrade.sort((a, b) => {
+                naoDispensadas.sort((a, b) => {
                     if (a.ano !== b.ano) return a.ano - b.ano;
-                    return a.periodo - b.periodo;
+                    if (a.periodo !== b.periodo) return a.periodo - b.periodo;
+                    return a.serie - b.serie;
                 });
                 
                 // Agrupar por ano e período
                 const grupos = {};
-                disciplinasGrade.forEach(disciplina => {
+                naoDispensadas.forEach(disciplina => {
                     const chave = `${disciplina.ano}-${disciplina.periodo}`;
                     if (!grupos[chave]) {
                         grupos[chave] = [];
