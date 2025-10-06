@@ -6,7 +6,7 @@ const coursesData = {
         "GRADUAÇÃO EM ARQUITETURA E URBANISMO",
         "GRADUAÇÃO EM BIOMEDICINA",
         "GRADUAÇÃO EM CIÊNCIAS BIOLÓGICAS (LICENCIATURA)",
-        "GRADUAÇÃO EM CIÊNCIAS BIOLÓGICAS (BACHARELADO)"
+        "GRADUAÇÃO EM CIÊNCIAS BIOLÓGICAS (BACHARELADO)",
         "GRADUAÇÃO EM CIÊNCIAS CONTÁBEIS",
         "GRADUAÇÃO EM COMUNICAÇÃO SOCIAL",
         "GRADUAÇÃO EM DIREITO",
@@ -197,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
 
 
