@@ -12,7 +12,7 @@ const coursesData = {
         "GRADUAÇÃO EM DIREITO",
         "GRADUAÇÃO EM ENFERMAGEM",
         "GRADUAÇÃO EM ENGENHARIA CIVIL",
-        "GRADUAÇÕ EM ENGENHARIA MECÂNICA",
+        "GRADUAÇÃO EM ENGENHARIA DE PRODUÇÃO",
         "GRADUAÇÃO EM ENGENHARIA DE SOFTWARE",
         "GRADUAÇÃO EM ENGENHARIA MECÂNICA",
         "GRADUAÇÃO EM FARMÁCIA",
@@ -39,7 +39,7 @@ const coursesData = {
             1028.29, 2200.21, 1937.13, 1841.46, 855.26, 932.12, 932.63, 1387.04, 1793.63, 2152.38, 1889.30, 1554.46, 1674.04, 2056.72, 1745.79, 2032.79, 0, 1793.63, 0, 855.26, 2271.96, 956.55, 1291.38, 908.71
         ],
         discounts: [
-            50, 50, 60, 50, 30,50, 50, 50, 45, 60, 60, 60, 50, 55, 50, 50, 0, 50, 0, 50, 50, 45, 50, 50, 50
+            50, 50, 60, 50, 30, 50, 50, 50, 45, 60, 60, 60, 50, 55, 50, 50, 0, 50, 0, 50, 45, 50,50,50
         ]
     }
 };
@@ -197,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
 
 
