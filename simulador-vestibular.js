@@ -5,14 +5,14 @@ const coursesData = {
         "GRADUAÇÃO EM AGRONOMIA",
         "GRADUAÇÃO EM ARQUITETURA E URBANISMO",
         "GRADUAÇÃO EM BIOMEDICINA",
-        "GRADUAÇÃO EM CIÊNCIAS BIOLÓGICAS (LICENCIATURA)"
+        "GRADUAÇÃO EM CIÊNCIAS BIOLÓGICAS (LICENCIATURA)",
         "GRADUAÇÃO EM CIÊNCIAS BIOLÓGICAS (BACHARELADO)"
         "GRADUAÇÃO EM CIÊNCIAS CONTÁBEIS",
         "GRADUAÇÃO EM COMUNICAÇÃO SOCIAL",
         "GRADUAÇÃO EM DIREITO",
         "GRADUAÇÃO EM ENFERMAGEM",
         "GRADUAÇÃO EM ENGENHARIA CIVIL",
-        "GRADUAÇÕ EM ENGENHARIA MECÂNICA"
+        "GRADUAÇÕ EM ENGENHARIA MECÂNICA",
         "GRADUAÇÃO EM ENGENHARIA DE SOFTWARE",
         "GRADUAÇÃO EM ENGENHARIA MECÂNICA",
         "GRADUAÇÃO EM FARMÁCIA",
@@ -197,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
 
 
