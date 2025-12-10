@@ -64,12 +64,18 @@
             color: #2c3e50;
         }
 
-        select, input {
+        select, input, textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: monospace;
         }
 
         .search-box {
@@ -191,6 +197,20 @@
             background: #2980b9;
         }
 
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -280,6 +300,32 @@
             background-color: #f0f0f0;
         }
 
+        .import-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px dashed #3498db;
+        }
+
+        .import-section h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .example-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .import-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
         @media (max-width: 768px) {
             .controls {
                 grid-template-columns: 1fr;
@@ -287,6 +333,10 @@
             
             .disciplinas-list {
                 grid-template-columns: 1fr;
+            }
+            
+            .import-buttons {
+                flex-direction: column;
             }
         }
     </style>
@@ -338,6 +388,21 @@
         </div>
 
         <div class="disciplinas-container">
+            <div class="import-section">
+                <h4>Importar Disciplinas Cursadas</h4>
+                <p>Cole abaixo as disciplinas já cursadas (formato: código / nome / carga horária / série):</p>
+                <textarea id="disciplinasImportadas" placeholder="Exemplo:
+3 / PRES_80_327 / GO - PROJETO DE VIDA / 80 / 1
+4 / PRES_80_545 / TEORIAS DA ADMINISTRAÇÃO / 80 / 1"></textarea>
+                <div class="example-text">
+                    Formato esperado: [número] / [código] / [nome da disciplina] / [carga horária] / [série]
+                </div>
+                <div class="import-buttons">
+                    <button id="btnProcessarImportacao" class="btn btn-secondary btn-small">Processar Importação</button>
+                    <button id="btnLimparImportacao" class="btn btn-secondary btn-small">Limpar</button>
+                </div>
+            </div>
+
             <h2>Disciplinas Disponíveis</h2>
             <div class="info-text">
                 <strong>Nota:</strong> Todas as disciplinas a partir da série selecionada serão automaticamente marcadas como "Cursar". 
@@ -399,13 +464,13 @@
             </div>
             <div class="form-group">
                 <label for="disciplinaAno">Ano:</label>
-                <input type="number" id="disciplinaAno" min="2020" max="2030" value="2025">
+                <input type="number" id="disciplinaAno" min="2020" max="2030" value="2026">
             </div>
             <div class="form-group">
                 <label for="disciplinaPeriodo">Período:</label>
                 <select id="disciplinaPeriodo">
-                    <option value="1">1º Período</option>
-                    <option value="2" selected>2º Período</option>
+                    <option value="1" selected>1º Período</option>
+                    <option value="2">2º Período</option>
                 </select>
             </div>
             <button id="btnSalvarDisciplina" class="btn btn-primary">Salvar</button>
@@ -574,6 +639,14 @@
                 filtrarPorNome(this.value);
             });
 
+            // Evento para processar importação
+            document.getElementById('btnProcessarImportacao').addEventListener('click', processarImportacao);
+            
+            // Evento para limpar importação
+            document.getElementById('btnLimparImportacao').addEventListener('click', function() {
+                document.getElementById('disciplinasImportadas').value = '';
+            });
+
             // Evento para gerar PDF
             document.getElementById('btnGerarPDF').addEventListener('click', gerarPDF);
 
@@ -636,17 +709,17 @@
             const serieInicialNum = parseInt(serieInicial);
             const serieNum = parseInt(serie);
             
-            // Se for série anterior, usar valores padrão
+            // Se for série anterior, usar valores padrão (2026, período 1)
             if (serieNum < serieInicialNum) {
-                return { ano: 2025, periodo: 2 };
+                return { ano: 2026, periodo: 1 };
             }
             
             // Calcular a diferença de séries
             const diferencaSeries = serieNum - serieInicialNum;
             
-            // Começar com a série inicial (2025, período 2)
-            let ano = 2025;
-            let periodo = 2;
+            // Começar com a série inicial (2026, período 1) - ALTERADO DE 2025/2 PARA 2026/1
+            let ano = 2026;
+            let periodo = 1;
             
             // Avançar sequencialmente para cada série adicional
             for (let i = 0; i < diferencaSeries; i++) {
@@ -688,6 +761,100 @@
             
             // Atualizar a grade final
             atualizarGradeFinal();
+        }
+
+        // Função para processar a importação de disciplinas
+        function processarImportacao() {
+            const textoImportado = document.getElementById('disciplinasImportadas').value.trim();
+            if (!textoImportado) {
+                alert('Por favor, cole as disciplinas para importar.');
+                return;
+            }
+            
+            const serieInicial = document.getElementById('serieInicial').value;
+            if (!serieInicial) {
+                alert('Por favor, selecione a série inicial primeiro.');
+                return;
+            }
+            
+            const serieInicialNum = parseInt(serieInicial);
+            const linhas = textoImportado.split('\n');
+            let disciplinasProcessadas = 0;
+            let disciplinasEncontradas = 0;
+            
+            linhas.forEach(linha => {
+                // Limpar e processar a linha
+                linha = linha.trim();
+                if (!linha) return;
+                
+                // Separar por "/"
+                const partes = linha.split('/').map(p => p.trim());
+                
+                if (partes.length >= 5) {
+                    // Extrair informações
+                    const nomeDisciplina = partes[2]; // Nome da disciplina está na terceira posição
+                    const serie = parseInt(partes[4]); // Série está na quinta posição
+                    
+                    if (!isNaN(serie) && nomeDisciplina) {
+                        disciplinasProcessadas++;
+                        
+                        // Encontrar disciplinas que correspondam ao nome (busca parcial)
+                        const disciplinasEncontradasNoCurso = todasDisciplinas.filter(d => {
+                            // Verificar se o curso selecionado corresponde
+                            const cursoSelecionado = document.getElementById('curso').value;
+                            if (d.curso !== cursoSelecionado) return false;
+                            
+                            // Busca parcial no nome da disciplina
+                            const nomeDisciplinaLower = nomeDisciplina.toLowerCase();
+                            const nomeDBLower = d.nome.toLowerCase();
+                            
+                            // Verificar se o nome da disciplina importada contém parte do nome da disciplina do banco de dados
+                            // ou vice-versa
+                            return nomeDBLower.includes(nomeDisciplinaLower) || 
+                                   nomeDisciplinaLower.includes(nomeDBLower) ||
+                                   // Tenta encontrar correspondência removendo partes comuns
+                                   nomeDBLower.replace(/[-_]/g, ' ').includes(nomeDisciplinaLower.replace(/[-_]/g, ' ')) ||
+                                   nomeDisciplinaLower.replace(/[-_]/g, ' ').includes(nomeDBLower.replace(/[-_]/g, ' '));
+                        });
+                        
+                        if (disciplinasEncontradasNoCurso.length > 0) {
+                            disciplinasEncontradas++;
+                            
+                            // Para cada disciplina encontrada, aplicar a regra:
+                            // Se a série da disciplina colada for igual ou inferior à série inicial → dispensada
+                            // Se for posterior → adaptação
+                            disciplinasEncontradasNoCurso.forEach(disciplina => {
+                                // Encontrar a disciplina na lista de disciplinas selecionadas
+                                const index = disciplinasSelecionadas.findIndex(d => d.id === disciplina.id);
+                                
+                                if (index !== -1) {
+                                    if (serie <= serieInicialNum) {
+                                        // Disciplina dispensada
+                                        disciplinasSelecionadas[index].status = 'dispensada';
+                                    } else {
+                                        // Disciplina de adaptação
+                                        disciplinasSelecionadas[index].status = 'adaptacao';
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            
+            // Atualizar a grade
+            atualizarGradeFinal();
+            
+            // Atualizar a exibição das disciplinas
+            const curso = document.getElementById('curso').value;
+            const gradeInvertida = document.getElementById('gradeInvertida').value === 'sim';
+            
+            if (curso && serieInicial) {
+                filtrarDisciplinas(curso, serieInicial, gradeInvertida);
+            }
+            
+            // Mostrar mensagem de resultado
+            alert(`Processamento concluído!\n\nLinhas processadas: ${disciplinasProcessadas}\nDisciplinas encontradas e atualizadas: ${disciplinasEncontradas}\n\nNota: A busca por correspondência de nomes é parcial. Disciplinas que não foram encontradas automaticamente podem ser configuradas manualmente.`);
         }
 
         function filtrarDisciplinas(curso, serieInicial, gradeInvertida) {
