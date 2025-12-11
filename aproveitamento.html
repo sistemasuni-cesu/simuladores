@@ -389,13 +389,11 @@
 
         <div class="disciplinas-container">
             <div class="import-section">
-                <h4>Importar Disciplinas Cursadas</h4>
-                <p>Cole abaixo as disciplinas já cursadas (formato: código / nome / carga horária / série):</p>
-                <textarea id="disciplinasImportadas" placeholder="Exemplo:
-3 / PRES_80_327 / GO - PROJETO DE VIDA / 80 / 1
-4 / PRES_80_545 / TEORIAS DA ADMINISTRAÇÃO / 80 / 1"></textarea>
+                <h4>Importar Disciplinas Cursadas (Estrutura de 32 Linhas)</h4>
+                <p>Cole abaixo o bloco de informações da disciplina já cursada:</p>
+                <textarea id="disciplinasImportadas" placeholder="Cole o bloco de 32 linhas de cada disciplina aqui..."></textarea>
                 <div class="example-text">
-                    Formato esperado: [número] / [código] / [nome da disciplina] / [carga horária] / [série]
+                    O sistema irá buscar a cada 32 linhas as informações de Dispensar? (L.13), Adaptação (L.15), Ano (L.19) e Semestre (L.21).
                 </div>
                 <div class="import-buttons">
                     <button id="btnProcessarImportacao" class="btn btn-secondary btn-small">Processar Importação</button>
@@ -445,7 +443,6 @@
         </div>
     </div>
 
-    <!-- Modal para editar disciplina -->
     <div id="modalDisciplina" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -483,6 +480,7 @@
         let disciplinasFiltradas = [];
         let disciplinasSelecionadas = [];
         let disciplinaEditando = null;
+        // ⚠️ MANTENHA A URL CORRETA DA SUA API GOOGLE SHEETS AQUI
         const API_URL = 'https://script.google.com/macros/s/AKfycbzdUQPIoDQYJZn3UpjstbBwMfMIjrufvgCT9tfE5gnFyXLFcXh9tbwVEXpm9jAGZ2x50g/exec';
 
         // Inicialização
@@ -717,7 +715,7 @@
             // Calcular a diferença de séries
             const diferencaSeries = serieNum - serieInicialNum;
             
-            // Começar com a série inicial (2026, período 1) - ALTERADO DE 2025/2 PARA 2026/1
+            // Começar com a série inicial (2026, período 1)
             let ano = 2026;
             let periodo = 1;
             
@@ -734,7 +732,7 @@
         }
 
         function inicializarDisciplinasComoCursar(curso, serieInicial, gradeInvertida) {
-            // Limpar disciplinas selecionadas
+            // Limpar disciplinas selecionadas (começamos do zero a cada mudança de curso/série)
             disciplinasSelecionadas = [];
             
             // Filtrar disciplinas pelo curso
@@ -763,7 +761,7 @@
             atualizarGradeFinal();
         }
 
-        // Função para processar a importação de disciplinas
+        // Função para processar a importação de disciplinas (ATUALIZADA PARA O NOVO FORMATO DE 32 LINHAS)
         function processarImportacao() {
             const textoImportado = document.getElementById('disciplinasImportadas').value.trim();
             if (!textoImportado) {
@@ -771,90 +769,97 @@
                 return;
             }
             
+            const cursoSelecionado = document.getElementById('curso').value;
             const serieInicial = document.getElementById('serieInicial').value;
-            if (!serieInicial) {
-                alert('Por favor, selecione a série inicial primeiro.');
+            if (!serieInicial || !cursoSelecionado) {
+                alert('Por favor, selecione o Curso e a Série Inicial primeiro.');
                 return;
             }
             
+            // 1. Garante que disciplinasSelecionadas esteja populada com os status e datas iniciais
+            const gradeInvertida = document.getElementById('gradeInvertida').value === 'sim';
+            inicializarDisciplinasComoCursar(cursoSelecionado, serieInicial, gradeInvertida);
+
             const serieInicialNum = parseInt(serieInicial);
             const linhas = textoImportado.split('\n');
             let disciplinasProcessadas = 0;
-            let disciplinasEncontradas = 0;
+            let disciplinasAtualizadas = 0;
             
-            linhas.forEach(linha => {
-                // Limpar e processar a linha
-                linha = linha.trim();
-                if (!linha) return;
+            // O bloco de informações de uma disciplina tem 32 linhas, então iteramos a cada 32 linhas.
+            for (let i = 0; i < linhas.length; i += 32) {
                 
-                // Separar por "/"
-                const partes = linha.split('/').map(p => p.trim());
-                
-                if (partes.length >= 5) {
-                    // Extrair informações
-                    const nomeDisciplina = partes[2]; // Nome da disciplina está na terceira posição
-                    const serie = parseInt(partes[4]); // Série está na quinta posição
+                // 1. Extrair dados das linhas de interesse (com tratamento de erro básico)
+                const linhaPrincipal = linhas[i]?.trim(); // Linha 1 (índice i)
+                const dispensarSimNao = linhas[i + 12]?.trim().toUpperCase(); // Linha 13 (índice i+12)
+                const adaptacaoSimNao = linhas[i + 14]?.trim().toUpperCase(); // Linha 15 (índice i+14)
+                const anoAdaptacao = parseInt(linhas[i + 18]?.trim()); // Linha 19 (índice i+18)
+                const semestreAdaptacao = linhas[i + 20]?.trim(); // Linha 21 (índice i+20)
+
+                // Se a linha principal não existir ou estiver vazia, pular
+                if (!linhaPrincipal) continue;
+
+                disciplinasProcessadas++;
+
+                // 2. Extrair nome e série da linha principal para correspondência
+                const partes = linhaPrincipal.split('/').map(p => p.trim());
+                // Nome da disciplina está na terceira posição (índice 2)
+                const nomeDisciplinaImportada = partes[2] ? partes[2].trim() : null; 
+                // Série está na quinta posição (índice 4)
+                const serieDisciplinaImportada = partes[4] ? parseInt(partes[4].trim()) : null; 
+
+                if (!nomeDisciplinaImportada || isNaN(serieDisciplinaImportada)) {
+                     console.warn(`Linha de disciplina inválida para correspondência (Linha ${i + 1}):`, linhaPrincipal);
+                     continue;
+                }
+
+                // 3. Encontrar a disciplina correspondente na matriz curricular (busca parcial e no curso selecionado)
+                const disciplinaMatriz = todasDisciplinas.find(d => {
+                    // Verifica o curso
+                    if (d.curso !== cursoSelecionado) return false;
                     
-                    if (!isNaN(serie) && nomeDisciplina) {
-                        disciplinasProcessadas++;
-                        
-                        // Encontrar disciplinas que correspondam ao nome (busca parcial)
-                        const disciplinasEncontradasNoCurso = todasDisciplinas.filter(d => {
-                            // Verificar se o curso selecionado corresponde
-                            const cursoSelecionado = document.getElementById('curso').value;
-                            if (d.curso !== cursoSelecionado) return false;
-                            
-                            // Busca parcial no nome da disciplina
-                            const nomeDisciplinaLower = nomeDisciplina.toLowerCase();
-                            const nomeDBLower = d.nome.toLowerCase();
-                            
-                            // Verificar se o nome da disciplina importada contém parte do nome da disciplina do banco de dados
-                            // ou vice-versa
-                            return nomeDBLower.includes(nomeDisciplinaLower) || 
-                                   nomeDisciplinaLower.includes(nomeDBLower) ||
-                                   // Tenta encontrar correspondência removendo partes comuns
-                                   nomeDBLower.replace(/[-_]/g, ' ').includes(nomeDisciplinaLower.replace(/[-_]/g, ' ')) ||
-                                   nomeDisciplinaLower.replace(/[-_]/g, ' ').includes(nomeDBLower.replace(/[-_]/g, ' '));
-                        });
-                        
-                        if (disciplinasEncontradasNoCurso.length > 0) {
-                            disciplinasEncontradas++;
-                            
-                            // Para cada disciplina encontrada, aplicar a regra:
-                            // Se a série da disciplina colada for igual ou inferior à série inicial → dispensada
-                            // Se for posterior → adaptação
-                            disciplinasEncontradasNoCurso.forEach(disciplina => {
-                                // Encontrar a disciplina na lista de disciplinas selecionadas
-                                const index = disciplinasSelecionadas.findIndex(d => d.id === disciplina.id);
-                                
-                                if (index !== -1) {
-                                    if (serie <= serieInicialNum) {
-                                        // Disciplina dispensada
-                                        disciplinasSelecionadas[index].status = 'dispensada';
-                                    } else {
-                                        // Disciplina de adaptação
-                                        disciplinasSelecionadas[index].status = 'adaptacao';
-                                    }
-                                }
-                            });
+                    // Busca parcial no nome da disciplina (flexível)
+                    const nomeDBLower = d.nome.toLowerCase().replace(/[-_]/g, ' ');
+                    const nomeImportLower = nomeDisciplinaImportada.toLowerCase().replace(/[-_]/g, ' ');
+
+                    // Usar lógica de busca flexível (contém ou é contido)
+                    return nomeDBLower.includes(nomeImportLower) || 
+                           nomeImportLower.includes(nomeDBLower);
+                });
+                
+                if (disciplinaMatriz) {
+                    disciplinasAtualizadas++;
+                    
+                    // 4. Aplicar a lógica de atualização no array disciplinasSelecionadas
+                    const index = disciplinasSelecionadas.findIndex(d => d.id === disciplinaMatriz.id);
+                    
+                    if (index !== -1) {
+                        let config = disciplinasSelecionadas[index];
+
+                        // Regra 1: Adaptação 'SIM' (Tem prioridade, e usa data importada)
+                        if (adaptacaoSimNao === 'SIM' && !isNaN(anoAdaptacao) && ['1', '2'].includes(semestreAdaptacao)) {
+                            config.status = 'adaptacao';
+                            config.ano = anoAdaptacao;
+                            config.periodo = semestreAdaptacao;
+                        } 
+                        // Regra 2: Dispensar 'SIM' (Força dispensa, independentemente da série)
+                        else if (dispensarSimNao === 'SIM') {
+                            config.status = 'dispensada';
                         }
+                        // Se não for adaptação e nem dispensa forçada, mantém o status original (cursar/dispensada)
+                        
+                        disciplinasSelecionadas[index] = config;
                     }
                 }
-            });
-            
-            // Atualizar a grade
-            atualizarGradeFinal();
-            
-            // Atualizar a exibição das disciplinas
-            const curso = document.getElementById('curso').value;
-            const gradeInvertida = document.getElementById('gradeInvertida').value === 'sim';
-            
-            if (curso && serieInicial) {
-                filtrarDisciplinas(curso, serieInicial, gradeInvertida);
             }
             
-            // Mostrar mensagem de resultado
-            alert(`Processamento concluído!\n\nLinhas processadas: ${disciplinasProcessadas}\nDisciplinas encontradas e atualizadas: ${disciplinasEncontradas}\n\nNota: A busca por correspondência de nomes é parcial. Disciplinas que não foram encontradas automaticamente podem ser configuradas manualmente.`);
+            // 5. Atualizar a interface
+            atualizarGradeFinal();
+            
+            if (cursoSelecionado && serieInicial) {
+                filtrarDisciplinas(cursoSelecionado, serieInicial, gradeInvertida);
+            }
+            
+            alert(`Processamento de ${disciplinasProcessadas} registros concluído!\n${disciplinasAtualizadas} disciplinas da matriz atualizadas com o status de aproveitamento/adaptação.\n\nNota: A busca por correspondência de nomes é parcial. Disciplinas que não foram encontradas automaticamente podem ser configuradas manualmente.`);
         }
 
         function filtrarDisciplinas(curso, serieInicial, gradeInvertida) {
@@ -902,6 +907,7 @@
                 
                 // Verificar se a disciplina já foi configurada
                 const configExistente = disciplinasSelecionadas.find(d => d.id === disciplina.id);
+                // Se não houver configuração, usar o status padrão (calculado em inicializarDisciplinasComoCursar)
                 const status = configExistente ? configExistente.status : (disciplina.serie >= parseInt(serieInicial) ? 'cursar' : 'dispensada');
                 
                 // Adicionar classe para séries anteriores
@@ -960,6 +966,10 @@
             // Verificar se a disciplina já existe na lista
             const index = disciplinasSelecionadas.findIndex(d => d.id === disciplinaEditando.id);
             
+            // Recalcular a data se a disciplina estava marcada como dispensada e mudou para cursar/adaptação,
+            // ou se o ano/período do modal for diferente do calculado automaticamente para Cursar.
+            // Para garantir que a data correta seja salva, calculamos novamente, a menos que o usuário tenha ajustado manualmente.
+            
             if (index !== -1) {
                 // Atualizar disciplina existente
                 disciplinasSelecionadas[index] = {
@@ -969,7 +979,7 @@
                     periodo
                 };
             } else {
-                // Adicionar nova disciplina
+                // Adicionar nova disciplina (se ela não foi inicializada corretamente, o que não deve ocorrer)
                 disciplinasSelecionadas.push({
                     ...disciplinaEditando,
                     status,
