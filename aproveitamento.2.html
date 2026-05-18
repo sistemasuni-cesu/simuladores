@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade Curricular · Unicesumar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --uni-red:    #C8102E;
+    --uni-dark:   #1A1A2E;
+    --uni-mid:    #2D2D4A;
+    --uni-gold:   #E8A020;
+    --uni-light:  #F5F5F8;
+    --uni-white:  #FFFFFF;
+    --uni-gray:   #6B6B80;
+    --uni-border: #E2E2EC;
+    --dispensada: #2E7D32;
+    --adaptacao:  #1565C0;
+    --regular:    #1A1A2E;
+    --shadow-sm: 0 2px 8px rgba(26,26,46,.08);
+    --shadow-md: 0 6px 24px rgba(26,26,46,.12);
+    --shadow-lg: 0 16px 48px rgba(26,26,46,.16);
+    --r: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--uni-light);
+    color: var(--uni-dark);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--uni-dark);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+    box-shadow: var(--shadow-md);
+  }
+  .logo-area { display: flex; align-items: center; gap: 14px; }
+  .logo-mark {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--uni-red);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark span { color: #fff; font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+  .logo-text { color: #fff; font-size: 15px; font-weight: 600; letter-spacing: .3px; }
+  .logo-text small { display: block; color: #9999BB; font-size: 11px; font-weight: 400; letter-spacing: 1.2px; text-transform: uppercase; }
+  .header-badge {
+    background: rgba(200,16,46,.18); color: var(--uni-red);
+    border: 1px solid rgba(200,16,46,.3);
+    padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    letter-spacing: .4px;
+  }
+
+  /* ── SETUP CARD ── */
+  .setup-wrap { max-width: 860px; margin: 48px auto 0; padding: 0 24px; }
+
+  .setup-card {
+    background: var(--uni-white);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  .setup-card-head {
+    background: linear-gradient(135deg, var(--uni-dark) 0%, var(--uni-mid) 100%);
+    padding: 28px 36px 24px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 20px;
+  }
+  .setup-card-head h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; color: #fff; line-height: 1.2;
+  }
+  .setup-card-head p { color: #9999BB; font-size: 13px; margin-top: 6px; }
+  .setup-card-body { padding: 32px 36px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: end; }
+
+  .field-group { display: flex; flex-direction: column; gap: 7px; }
+  .field-group label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--uni-gray);
+  }
+  .field-group input, .field-group select {
+    height: 44px; border-radius: 8px;
+    border: 1.5px solid var(--uni-border);
+    padding: 0 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--uni-dark);
+    background: #FAFAFC;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+  .field-group input:focus, .field-group select:focus {
+    border-color: var(--uni-red); box-shadow: 0 0 0 3px rgba(200,16,46,.1);
+  }
+
+  .period-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 20px; align-items: end; }
+
+  .btn-gerar {
+    height: 44px; border-radius: 8px; border: none; cursor: pointer;
+    background: var(--uni-red); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    letter-spacing: .3px;
+    transition: background .2s, transform .1s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(200,16,46,.3);
+  }
+  .btn-gerar:hover { background: #a80d25; box-shadow: 0 6px 20px rgba(200,16,46,.4); }
+  .btn-gerar:active { transform: scale(.98); }
+
+  .file-zone {
+    margin-top: 24px; border: 2px dashed var(--uni-border);
+    border-radius: 10px; padding: 24px; text-align: center;
+    cursor: pointer; transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .file-zone:hover { border-color: var(--uni-red); background: rgba(200,16,46,.03); }
+  .file-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .file-zone .fz-icon { font-size: 28px; margin-bottom: 8px; }
+  .file-zone p { font-size: 13px; color: var(--uni-gray); }
+  .file-zone strong { color: var(--uni-dark); }
+  #file-name { font-size: 13px; color: var(--uni-red); font-weight: 600; margin-top: 6px; display: none; }
+
+  /* ── OUTPUT ── */
+  #output { max-width: 1080px; margin: 36px auto 60px; padding: 0 24px; display: none; }
+
+  .output-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 28px; gap: 20px;
+  }
+  .output-title h2 {
+    font-family: 'Playfair Display', serif; font-size: 28px; color: var(--uni-dark);
+  }
+  .output-title p { color: var(--uni-gray); font-size: 13px; margin-top: 4px; }
+  .output-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+  .btn-outline {
+    height: 38px; padding: 0 18px; border-radius: 8px;
+    border: 1.5px solid var(--uni-border); background: var(--uni-white);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; color: var(--uni-dark);
+    transition: border-color .2s, background .2s;
+  }
+  .btn-outline:hover { border-color: var(--uni-gray); background: #f0f0f6; }
+  .btn-pdf {
+    height: 38px; padding: 0 20px; border-radius: 8px; border: none;
+    background: var(--uni-red); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(200,16,46,.3);
+    transition: background .2s;
+  }
+  .btn-pdf:hover { background: #a80d25; }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    background: var(--uni-white); border-radius: 10px;
+    padding: 16px 24px; margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-regular { background: var(--uni-dark); }
+  .dot-dispensada { background: var(--uni-dispensada); }
+  .dot-adaptacao { background: var(--adaptacao); }
+
+  /* ── DISPENSADAS ── */
+  .dispensadas-section {
+    background: var(--uni-white); border-radius: var(--r);
+    box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 28px;
+  }
+  .dispensadas-head {
+    background: linear-gradient(90deg, #1B5E20, #2E7D32);
+    padding: 16px 24px; display: flex; align-items: center; gap: 12px;
+  }
+  .dispensadas-head h3 { color: #fff; font-size: 14px; font-weight: 600; letter-spacing: .3px; }
+  .dispensadas-head .badge {
+    background: rgba(255,255,255,.2); color: #fff;
+    padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+  .dispensadas-grid {
+    display: flex; flex-wrap: wrap; gap: 10px; padding: 20px 24px;
+  }
+  .disp-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: #F1F8F2; border: 1px solid #C8E6C9;
+    border-radius: 8px; padding: 8px 14px;
+    font-size: 13px; color: #1B5E20;
+  }
+  .disp-chip .ch { font-size: 11px; color: #4CAF50; font-weight: 600; background: #E8F5E9; padding: 2px 7px; border-radius: 10px; }
+  .disp-chip .disp-serie {
+    font-size: 10px; font-weight: 700; letter-spacing: .5px;
+    color: #fff; background: #4CAF50;
+    padding: 2px 7px; border-radius: 10px; flex-shrink: 0;
+  }
+
+  /* ── GRADE ── */
+  .grade-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--uni-dark);
+    margin-bottom: 18px; padding-left: 4px;
+  }
+
+  .serie-block {
+    margin-bottom: 20px;
+    background: var(--uni-white);
+    border-radius: 12px;
+    border: 1.5px solid var(--uni-border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .serie-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 24px;
+    background: var(--uni-light);
+    border-bottom: 1.5px solid var(--uni-border);
+  }
+  .serie-block.ingresso .serie-header {
+    background: linear-gradient(135deg, var(--uni-dark) 0%, var(--uni-mid) 100%);
+    border-bottom-color: transparent;
+  }
+  .serie-block.ingresso .serie-info h4 { color: #fff; }
+  .serie-block.ingresso .serie-info span { color: #9999BB; }
+  .serie-block.ingresso .serie-ch-total {
+    background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.2);
+  }
+  .serie-block.adaptacao-bloco .serie-header {
+    background: #EEF4FF;
+    border-bottom-color: #BBDEFB;
+  }
+  .serie-block.adaptacao-bloco .serie-info h4 { color: #0D47A1; }
+
+  .disciplinas-grid { padding: 18px 20px; }
+
+  .serie-num {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--uni-dark); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .serie-block.ingresso .serie-num {
+    background: var(--uni-red);
+    box-shadow: 0 4px 14px rgba(200,16,46,.4);
+  }
+  .serie-block.adaptacao-bloco .serie-num { background: var(--adaptacao); }
+
+  .serie-info h4 { font-size: 15px; font-weight: 600; color: var(--uni-dark); }
+  .serie-info span { font-size: 12px; color: var(--uni-gray); }
+  .serie-ch-total {
+    margin-left: auto; font-size: 12px; font-weight: 600;
+    color: var(--uni-gray); background: var(--uni-white);
+    padding: 4px 12px; border-radius: 20px; border: 1px solid var(--uni-border);
+  }
+
+  .disciplinas-grid-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .disc-card {
+    background: var(--uni-white); border-radius: 10px;
+    border: 1.5px solid var(--uni-border);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s, box-shadow .18s;
+    position: relative; overflow: hidden;
+  }
+  .disc-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--uni-dark);
+    border-radius: 2px 0 0 2px;
+  }
+  .disc-card.adaptacao::before { background: var(--adaptacao); }
+  .disc-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+  .disc-name {
+    font-size: 13.5px; font-weight: 600; color: var(--uni-dark);
+    line-height: 1.4; margin-bottom: 10px;
+  }
+  .disc-card.adaptacao .disc-name { color: #0D47A1; }
+
+  .disc-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .disc-ch {
+    font-size: 12px; font-weight: 700; color: var(--uni-white);
+    background: var(--uni-dark); padding: 3px 10px; border-radius: 6px;
+    letter-spacing: .3px;
+  }
+  .disc-card.adaptacao .disc-ch { background: var(--adaptacao); }
+
+  .tag-adaptacao {
+    font-size: 10px; font-weight: 700; letter-spacing: .8px;
+    text-transform: uppercase; color: var(--adaptacao);
+    background: #E3F2FD; padding: 3px 8px; border-radius: 5px;
+    border: 1px solid #BBDEFB;
+  }
+
+  .disc-codigo { font-size: 11px; color: #A0A0B8; }
+
+  /* ── MODAL ADAPTACAO ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(26,26,46,.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; backdrop-filter: blur(3px);
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--uni-white); border-radius: 14px;
+    box-shadow: var(--shadow-lg); width: 520px; max-width: 92vw;
+    max-height: 80vh; overflow-y: auto;
+    transform: translateY(20px); transition: transform .25s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-head {
+    padding: 24px 28px 16px;
+    border-bottom: 1px solid var(--uni-border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-head h3 { font-family: 'Playfair Display', serif; font-size: 18px; }
+  .modal-head p { font-size: 12px; color: var(--uni-gray); margin-top: 3px; }
+  .modal-close {
+    width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--uni-border);
+    background: none; cursor: pointer; font-size: 18px; color: var(--uni-gray);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .modal-close:hover { background: var(--uni-light); }
+  .modal-body { padding: 20px 28px; }
+  .modal-disc-item {
+    padding: 14px 0; border-bottom: 1px solid var(--uni-border);
+    display: grid; gap: 10px;
+  }
+  .modal-disc-item:last-child { border-bottom: none; }
+  .modal-disc-name { font-size: 13.5px; font-weight: 600; }
+  .modal-disc-serie { font-size: 12px; color: var(--uni-gray); }
+  .modal-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-inputs label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--uni-gray); display: block; margin-bottom: 5px; }
+  .modal-inputs input, .modal-inputs select {
+    height: 38px; width: 100%; border-radius: 7px;
+    border: 1.5px solid var(--uni-border); padding: 0 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    outline: none; transition: border-color .2s;
+  }
+  .modal-inputs input:focus, .modal-inputs select:focus { border-color: var(--adaptacao); }
+  .modal-foot { padding: 16px 28px 24px; display: flex; justify-content: flex-end; gap: 10px; }
+  .btn-confirm {
+    height: 40px; padding: 0 24px; border-radius: 8px; border: none;
+    background: var(--adaptacao); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-confirm:hover { background: #0D47A1; }
+
+  /* ── EMPTY / ALERT ── */
+  .alert {
+    background: #FFF8E1; border: 1px solid #FFE082;
+    border-radius: 10px; padding: 16px 20px;
+    font-size: 13px; color: #5D4037; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  #pdf-header { display: none !important; }
+
+  /* ── PRINT ── */
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body { background: #fff; font-size: 11px; }
+
+    .site-header, .setup-wrap, .output-actions,
+    .modal-overlay, .output-header, .btn-pdf, .btn-outline,
+    .legend, #alert-area { display: none !important; }
+
+    #pdf-header { display: block !important; }
+
+    #output {
+      display: block !important;
+      margin: 0; padding: 12px 18px; max-width: 100%;
+    }
+
+    /* Dispensadas compactas */
+    .dispensadas-section {
+      box-shadow: none !important;
+      border: 1px solid #C8E6C9 !important;
+      border-radius: 6px !important;
+      margin-bottom: 10px;
+      break-inside: avoid;
+    }
+    .dispensadas-head { padding: 8px 14px !important; }
+    .dispensadas-head h3 { font-size: 11px !important; }
+    .dispensadas-grid { padding: 8px 14px !important; gap: 6px !important; }
+    .disp-chip {
+      padding: 4px 8px !important;
+      font-size: 10px !important;
+      border-radius: 4px !important;
+    }
+    .disp-chip .disp-serie { font-size: 9px !important; padding: 1px 5px !important; }
+
+    /* Cada bloco de série vira layout de tabela */
+    .serie-block {
+      border: 1px solid #D0D0E0 !important;
+      border-radius: 6px !important;
+      box-shadow: none !important;
+      margin-bottom: 8px !important;
+      break-inside: auto;
+      overflow: visible !important;
+    }
+
+    .serie-header {
+      padding: 7px 12px !important;
+      background: #F0F0F6 !important;
+      border-bottom: 1px solid #D0D0E0 !important;
+      break-inside: avoid;
+    }
+    .serie-block.ingresso .serie-header { background: #1A1A2E !important; }
+    .serie-block.adaptacao-bloco .serie-header { background: #DCE8FF !important; }
+
+    .serie-num {
+      width: 28px !important; height: 28px !important;
+      font-size: 13px !important; border-radius: 6px !important;
+    }
+    .serie-info h4 { font-size: 12px !important; }
+    .serie-info span { font-size: 10px !important; }
+    .serie-ch-total { font-size: 10px !important; padding: 2px 8px !important; }
+
+    /* Grid → tabela de linhas compactas */
+    .disciplinas-grid { padding: 0 !important; }
+    .disciplinas-grid-inner {
+      display: block !important;
+    }
+
+    .disc-card {
+      display: flex !important;
+      align-items: center !important;
+      border-radius: 0 !important;
+      border: none !important;
+      border-bottom: 1px solid #EBEBF5 !important;
+      box-shadow: none !important;
+      padding: 6px 12px 6px 16px !important;
+      background: #fff !important;
+      break-inside: avoid;
+      transition: none !important;
+    }
+    .disc-card:last-child { border-bottom: none !important; }
+
+    .disc-card::before {
+      width: 3px !important;
+      border-radius: 0 !important;
+    }
+
+    .disc-name {
+      font-size: 11px !important;
+      margin-bottom: 0 !important;
+      flex: 1;
+      line-height: 1.3 !important;
+    }
+
+    .disc-footer {
+      flex-shrink: 0;
+      gap: 6px !important;
+      margin-left: 10px;
+    }
+
+    .disc-ch {
+      font-size: 10px !important;
+      padding: 2px 7px !important;
+      border-radius: 4px !important;
+    }
+
+    .tag-adaptacao {
+      font-size: 9px !important;
+      padding: 2px 5px !important;
+    }
+
+    .disc-codigo { font-size: 9px !important; color: #B0B0C8 !important; }
+
+    .grade-title { font-size: 14px !important; margin-bottom: 10px !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="logo-area">
+    <div class="logo-mark"><span>U</span></div>
+    <div class="logo-text">
+      Unicesumar
+      <small>Grade Curricular · Transferência</small>
+    </div>
+  </div>
+  <div class="header-badge">Aproveitamento de Estudos</div>
+</header>
+
+<!-- SETUP -->
+<div class="setup-wrap">
+  <div class="setup-card">
+    <div class="setup-card-head">
+      <div>
+        <h1>Configurar Grade Curricular</h1>
+        <p>Faça upload do arquivo Excel exportado do SYDLE ONE e configure os dados de ingresso</p>
+      </div>
+    </div>
+    <div class="setup-card-body">
+
+      <!-- Upload -->
+      <div class="file-zone" id="drop-zone">
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv">
+        <div class="fz-icon">📊</div>
+        <p><strong>Arraste o arquivo Excel aqui</strong> ou clique para selecionar</p>
+        <p>Arquivo gerado pelo SYDLE ONE (.xlsx)</p>
+        <div id="file-name"></div>
+      </div>
+
+      <!-- Campos -->
+      <div class="field-row" style="margin-top:24px">
+        <div class="field-group">
+          <label>Nome do Curso</label>
+          <input type="text" id="inp-curso" placeholder="Ex: Odontologia" value="Odontologia">
+        </div>
+        <div class="field-group">
+          <label>Série de Ingresso</label>
+          <select id="inp-serie">
+            <option value="">Selecione...</option>
+            <option value="1">1ª Série</option>
+            <option value="2">2ª Série</option>
+            <option value="3">3ª Série</option>
+            <option value="4">4ª Série</option>
+            <option value="5">5ª Série</option>
+            <option value="6">6ª Série</option>
+            <option value="7">7ª Série</option>
+            <option value="8">8ª Série</option>
+            <option value="9">9ª Série</option>
+            <option value="10">10ª Série</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Nome do Aluno</label>
+          <input type="text" id="inp-inst" placeholder="Ex: João da Silva">
+        </div>
+      </div>
+
+      <div class="period-row">
+        <div class="field-group">
+          <label>Ano de Ingresso</label>
+          <input type="number" id="inp-ano" value="2026" min="2020" max="2040">
+        </div>
+        <div class="field-group">
+          <label>Semestre de Ingresso</label>
+          <select id="inp-semestre">
+            <option value="1">1º Semestre</option>
+            <option value="2">2º Semestre</option>
+          </select>
+        </div>
+        <button class="btn-gerar" onclick="gerarGrade()">Gerar Grade →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUT -->
+<div id="output">
+  <div id="pdf-header" style="display:none; margin-bottom:24px; padding-bottom:18px; border-bottom:2px solid var(--uni-border);">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--uni-dark);" id="pdf-title-text"></div>
+        <div style="font-size:12px; color:var(--uni-gray); margin-top:4px;" id="pdf-subtitle-text"></div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px; color:var(--uni-gray); letter-spacing:.5px; text-transform:uppercase;">Unicesumar</div>
+        <div style="font-size:11px; color:var(--uni-gray);">Aproveitamento de Estudos</div>
+      </div>
+    </div>
+  </div>
+  <div class="output-header">
+    <div class="output-title">
+      <h2 id="out-title">Grade Curricular</h2>
+      <p id="out-subtitle"></p>
+    </div>
+    <div class="output-actions">
+      <button class="btn-outline" onclick="document.getElementById('output').scrollIntoView({behavior:'smooth'})">↑ Topo</button>
+      <button class="btn-pdf" onclick="window.print()">⬇ Exportar PDF</button>
+    </div>
+  </div>
+
+  <div id="alert-area"></div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-regular"></div> Disciplina Regular</div>
+    <div class="legend-item"><div class="legend-dot dot-dispensada"></div> Dispensada</div>
+    <div class="legend-item"><div class="legend-dot dot-adaptacao" style="background:var(--adaptacao)"></div> Adaptação</div>
+  </div>
+
+  <div id="dispensadas-section"></div>
+  <div id="grade-section"></div>
+</div>
+
+<!-- MODAL ADAPTAÇÕES SEM PERÍODO -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>Alocar Adaptações</h3>
+        <p>Defina o ano e semestre para as adaptações sem período definido</p>
+      </div>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn-outline" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmarAdaptacoes()">Confirmar e Gerar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SheetJS para ler Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+// ─── Estado global ───────────────────────────────────────────────
+let DADOS = [];          // linhas da Tabela_2
+let adaptacoesPendentes = [];   // adaptações sem ano/semestre
+
+// ─── Upload ──────────────────────────────────────────────────────
+const fileInput = document.getElementById('file-input');
+
+fileInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  carregarArquivo(file);
+});
+
+document.getElementById('drop-zone').addEventListener('dragover', e => {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = 'var(--uni-red)';
+});
+document.getElementById('drop-zone').addEventListener('dragleave', e => {
+  e.currentTarget.style.borderColor = 'var(--uni-border)';
+});
+document.getElementById('drop-zone').addEventListener('drop', e => {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = 'var(--uni-border)';
+  const file = e.dataTransfer.files[0];
+  if (file) carregarArquivo(file);
+});
+
+function carregarArquivo(file) {
+  const nome = document.getElementById('file-name');
+  nome.textContent = '✓ ' + file.name;
+  nome.style.display = 'block';
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const wb = XLSX.read(e.target.result, { type: 'array' });
+
+    // Tentar ler Tabela_2, senão usar a primeira aba
+    let sheetName = wb.SheetNames.find(n => n === 'Tabela_2') || wb.SheetNames[0];
+    const ws = wb.Sheets[sheetName];
+    DADOS = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+    // Normalizar chaves (remover BOM e espaços)
+    DADOS = DADOS.map(row => {
+      const clean = {};
+      for (const k in row) clean[k.replace(/^\uFEFF/, '').trim()] = row[k];
+      return clean;
+    });
+
+    // Tentar pré-preencher nome do curso e instituição
+    const inst = document.querySelector('#inp-inst');
+    if (!inst.value) {
+      // Buscar na Tabela_1 se houver
+      const t1 = wb.SheetNames.find(n => n === 'Tabela_1');
+      if (t1) {
+        const ws1 = wb.Sheets[t1];
+        const d1 = XLSX.utils.sheet_to_json(ws1, { defval: '' });
+        if (d1.length && d1[0]['Nome']) inst.value = d1[0]['Nome'];
+        if (d1.length && d1[0]['Curso']) document.getElementById('inp-curso').value = d1[0]['Curso'];
+      }
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ─── Gerador principal ───────────────────────────────────────────
+function gerarGrade() {
+  if (!DADOS.length) {
+    alert('⚠ Carregue o arquivo Excel antes de gerar a grade.');
+    return;
+  }
+  const serie = parseInt(document.getElementById('inp-serie').value);
+  if (!serie) { alert('⚠ Selecione a série de ingresso.'); return; }
+
+  adaptacoesPendentes = [];
+
+  // Adaptações sem ano/semestre definido (Ano = vazio ou '')
+  DADOS.forEach((row, idx) => {
+    const serieDisc = parseInt(row['Série']) || 0;
+    const isAdapt = normalizar(row['Adaptação']) === 'sim';
+    const ano = String(row['Ano'] || '').trim();
+    if (isAdapt && serieDisc < serie && (ano === '' || ano.toLowerCase() === 'vazio')) {
+      adaptacoesPendentes.push({ idx, row });
+    }
+  });
+
+  if (adaptacoesPendentes.length > 0) {
+    abrirModal();
+  } else {
+    renderGrade();
+  }
+}
+
+function normalizar(v) { return String(v || '').trim().toLowerCase(); }
+
+// ─── Modal ───────────────────────────────────────────────────────
+function abrirModal() {
+  const body = document.getElementById('modal-body');
+  const anoIngresso = parseInt(document.getElementById('inp-ano').value);
+  const semIngresso = parseInt(document.getElementById('inp-semestre').value);
+
+  body.innerHTML = adaptacoesPendentes.map(({ idx, row }) => `
+    <div class="modal-disc-item">
+      <div>
+        <div class="modal-disc-name">${row['Disciplina']}</div>
+        <div class="modal-disc-serie">Série curricular: ${row['Série']}ª · C.H: ${row['C.H']}h</div>
+      </div>
+      <div class="modal-inputs">
+        <div>
+          <label>Ano</label>
+          <input type="number" id="mad-ano-${idx}" value="${anoIngresso}" min="2020" max="2040">
+        </div>
+        <div>
+          <label>Semestre</label>
+          <select id="mad-sem-${idx}">
+            <option value="1" ${semIngresso === 1 ? 'selected' : ''}>1º</option>
+            <option value="2" ${semIngresso === 2 ? 'selected' : ''}>2º</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function fecharModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function confirmarAdaptacoes() {
+  adaptacoesPendentes.forEach(({ idx }) => {
+    const ano = document.getElementById(`mad-ano-${idx}`).value;
+    const sem = document.getElementById(`mad-sem-${idx}`).value;
+    DADOS[idx]['Ano'] = ano;
+    DADOS[idx]['Semestre'] = sem;
+  });
+  fecharModal();
+  renderGrade();
+}
+
+// ─── Render ──────────────────────────────────────────────────────
+function renderGrade() {
+  const curso   = document.getElementById('inp-curso').value || 'Curso';
+  const inst    = document.getElementById('inp-inst').value;
+  const serie   = parseInt(document.getElementById('inp-serie').value);
+  const anoIng  = parseInt(document.getElementById('inp-ano').value);
+  const semIng  = parseInt(document.getElementById('inp-semestre').value);
+
+  // Título
+  document.getElementById('out-title').textContent = `Grade Curricular – ${curso}`;
+  const subtitleText = `${inst ? 'Aluno: ' + inst + ' · ' : ''}Unicesumar · Ingresso: ${serie}ª Série · ${anoIng}/${semIng}`;
+  document.getElementById('out-subtitle').textContent = subtitleText;
+
+  // Cabeçalho PDF (só aparece no print via CSS)
+  document.getElementById('pdf-title-text').textContent = `Grade Curricular – ${curso}`;
+  document.getElementById('pdf-subtitle-text').textContent = subtitleText;
+  document.getElementById('pdf-header').style.display = 'block';
+
+  // ── Disciplinas dispensadas ─────────────────────────────────────
+  const dispensadas = DADOS.filter(r =>
+    normalizar(r['Dispensar?']) === 'sim' && parseInt(r['Série']) < serie
+  );
+
+  const dispHTML = dispensadas.length ? `
+    <div class="dispensadas-section">
+      <div class="dispensadas-head">
+        <h3>✓ Disciplinas Dispensadas</h3>
+        <div class="badge">${dispensadas.length} disciplinas</div>
+      </div>
+      <div class="dispensadas-grid">
+        ${dispensadas.map(r => `
+          <div class="disp-chip">
+            <span class="disp-serie">${r['Série']}ª</span>
+            <span>${r['Disciplina']}</span>
+            <span class="ch">${r['C.H']}h</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  document.getElementById('dispensadas-section').innerHTML = dispHTML;
+
+  // ── Calcular semestre de cada adaptação ──────────────────────────
+  // A lógica: cada semestre após o ingresso = +1 na série
+  // Ex: ingresso 3ª série 2026/1 → 2026/2 = 4ª, 2027/1 = 5ª, 2027/2 = 6ª
+  function anoSemParaSerie(ano, sem) {
+    const totalSemIngresso = (anoIng * 2) + semIng - 1;
+    const totalSemDisc = (parseInt(ano) * 2) + parseInt(sem) - 1;
+    const diff = totalSemDisc - totalSemIngresso;
+    return serie + diff;
+  }
+
+  // ── Montar série→disciplinas ─────────────────────────────────────
+  const gradeMap = {}; // { serieNum: [{...disc, _tipo}] }
+
+  DADOS.forEach(row => {
+    const serieDisc = parseInt(row['Série']) || 0;
+    const dispensar = normalizar(row['Dispensar?']) === 'sim';
+    const adaptar   = normalizar(row['Adaptação']) === 'sim';
+
+    // Dispensadas já listadas acima, não entram na grade
+    if (dispensar && serieDisc < serie) return;
+
+    let targetSerie;
+    let tipo = 'regular';
+
+    if (adaptar && serieDisc < serie) {
+      // Alocar adaptação pela data
+      const ano = String(row['Ano'] || '').trim();
+      const sem = String(row['Semestre'] || '').trim();
+      if (!ano || ano.toLowerCase() === 'vazio') return; // skip sem data
+      targetSerie = anoSemParaSerie(ano, sem);
+      tipo = 'adaptacao';
+    } else {
+      targetSerie = serieDisc;
+      if (targetSerie < serie) return; // série anterior sem marcação = ignorar
+    }
+
+    if (!gradeMap[targetSerie]) gradeMap[targetSerie] = [];
+    gradeMap[targetSerie].push({ ...row, _tipo: tipo });
+  });
+
+  // ── Séries a mostrar: da ingresso até a máxima ───────────────────
+  const seriesExistentes = DADOS.map(r => parseInt(r['Série'])).filter(Boolean);
+  const maxSerie = Math.max(...seriesExistentes,
+    ...Object.keys(gradeMap).map(Number));
+  const seriesAdaptacao = Object.keys(gradeMap).map(Number).filter(s => s < serie);
+
+  const todasSeries = [...new Set([
+    ...seriesAdaptacao,
+    ...Array.from({ length: maxSerie - serie + 1 }, (_, i) => serie + i)
+  ])].sort((a, b) => a - b);
+
+  // Alertas
+  let alertHTML = '';
+  const anoSemAtual = anoSemParaSerie(anoIng, semIng); // deve = serie
+  if (adaptacoesPendentes.length === 0) {
+    // tudo ok
+  }
+
+  document.getElementById('alert-area').innerHTML = alertHTML;
+
+  // ── HTML da grade ─────────────────────────────────────────────────
+  const ordinal = n => {
+    const sufixos = ['','ª','ª','ª'];
+    return n + 'ª';
+  };
+
+  const gradeHTML = `
+    <p class="grade-title">Grade Curricular</p>
+    ${todasSeries.map(s => {
+      const discs = gradeMap[s] || [];
+      const chTotal = discs.reduce((acc, d) => acc + (parseInt(d['C.H']) || 0), 0);
+      const isCurrent = s === serie;
+      const isAdaptSerie = s < serie;
+
+      const label = isAdaptSerie
+        ? `Adaptações alocadas na ${ordinal(s)} Série`
+        : `${ordinal(s)} Série`;
+
+      const sublabel = isAdaptSerie
+        ? 'Disciplinas de adaptação de séries anteriores'
+        : isCurrent
+          ? `Série de ingresso · ${anoIng}/${semIng}`
+          : '';
+
+      const blockClass = isAdaptSerie ? 'adaptacao-bloco' : isCurrent ? 'ingresso' : '';
+
+      return `
+        <div class="serie-block ${blockClass}">
+          <div class="serie-header">
+            <div class="serie-num">${s}</div>
+            <div class="serie-info">
+              <h4>${label}</h4>
+              ${sublabel ? `<span>${sublabel}</span>` : ''}
+            </div>
+            ${chTotal ? `<div class="serie-ch-total">${chTotal}h totais</div>` : ''}
+          </div>
+          ${discs.length === 0 ? `
+            <div style="padding:18px 24px; color:var(--uni-gray); font-size:13px; font-style:italic;">
+              Nenhuma disciplina alocada nesta série.
+            </div>
+          ` : `
+          <div class="disciplinas-grid">
+            <div class="disciplinas-grid-inner">
+              ${discs.map(d => `
+                <div class="disc-card ${d._tipo}">
+                  <div class="disc-name">${d['Disciplina']}</div>
+                  <div class="disc-footer">
+                    <span class="disc-ch">${d['C.H']}h</span>
+                    ${d._tipo === 'adaptacao' ? `<span class="tag-adaptacao">Adaptação</span>` : ''}
+                    <span class="disc-codigo">${d['Código da disciplina']}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          `}
+        </div>
+      `;
+    }).join('')}
+  `;
+
+  document.getElementById('grade-section').innerHTML = gradeHTML;
+
+  // Mostrar output e rolar
+  const out = document.getElementById('output');
+  out.style.display = 'block';
+  setTimeout(() => out.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+}
+</script>
+</body>
+</html>
