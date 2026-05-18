@@ -788,9 +788,9 @@ function renderGrade() {
   document.getElementById('pdf-header').style.display = 'block';
 
   // ── Disciplinas dispensadas ─────────────────────────────────────
-  const dispensadas = DADOS.filter(r =>
-    normalizar(r['Dispensar?']) === 'sim' && parseInt(r['Série']) < serie
-  );
+  // ALTERAÇÃO: removido o filtro por série — todas as disciplinas marcadas
+  // com "Dispensar? = sim" aparecem na lista, independente da série de ingresso.
+  const dispensadas = DADOS.filter(r => normalizar(r['Dispensar?']) === 'sim');
 
   const dispHTML = dispensadas.length ? `
     <div class="dispensadas-section">
@@ -813,8 +813,6 @@ function renderGrade() {
   document.getElementById('dispensadas-section').innerHTML = dispHTML;
 
   // ── Calcular semestre de cada adaptação ──────────────────────────
-  // A lógica: cada semestre após o ingresso = +1 na série
-  // Ex: ingresso 3ª série 2026/1 → 2026/2 = 4ª, 2027/1 = 5ª, 2027/2 = 6ª
   function anoSemParaSerie(ano, sem) {
     const totalSemIngresso = (anoIng * 2) + semIng - 1;
     const totalSemDisc = (parseInt(ano) * 2) + parseInt(sem) - 1;
@@ -831,7 +829,7 @@ function renderGrade() {
     const adaptar   = normalizar(row['Adaptação']) === 'sim';
 
     // Dispensadas já listadas acima, não entram na grade
-    if (dispensar && serieDisc < serie) return;
+    if (dispensar) return;
 
     let targetSerie;
     let tipo = 'regular';
@@ -865,18 +863,10 @@ function renderGrade() {
 
   // Alertas
   let alertHTML = '';
-  const anoSemAtual = anoSemParaSerie(anoIng, semIng); // deve = serie
-  if (adaptacoesPendentes.length === 0) {
-    // tudo ok
-  }
-
   document.getElementById('alert-area').innerHTML = alertHTML;
 
   // ── HTML da grade ─────────────────────────────────────────────────
-  const ordinal = n => {
-    const sufixos = ['','ª','ª','ª'];
-    return n + 'ª';
-  };
+  const ordinal = n => n + 'ª';
 
   const gradeHTML = `
     <p class="grade-title">Grade Curricular</p>
